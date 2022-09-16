@@ -136,7 +136,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
                 backTracking(posicionInicial, filaInicial, columnaInicial)
             }
             //Aceptación y Almacenamiento AA
-            almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
+            almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
             return true
         }
         if ( caracterActual == '¬' || caracterActual == '='){
@@ -146,7 +146,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
             obtenerSiguienteCaracter()
             return if ( caracterActual == '=' ){
                 //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
+                almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
                 true
             } else{
                 //Bactracking BT
@@ -159,13 +159,45 @@ class AnalizadorLexico(private var codigoFuente:String) {
     }
 
     private fun esOperadorAritmetico():Boolean{
-        if( caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/' || caracterActual == '%' ){
+        if( caracterActual == '*' || caracterActual == '/' || caracterActual == '%' ){
             actualizarVariables()
             //Transición Inicial
             lexema += caracterActual
             //Aceptación y Almacenamiento AA
             almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
             return true
+        }
+        if( caracterActual == '+'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            if( caracterActual == '+'){
+                //Bactracking BT
+                backTracking(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+            else{
+                lexema += caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+
+            }
+        }
+        if( caracterActual == '-'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            if( caracterActual == '-'){
+                //Bactracking BT
+                backTracking(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+            else{ lexema += caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+            }
         }
         //Rechazo inmediato RI
         return false
@@ -180,7 +212,47 @@ class AnalizadorLexico(private var codigoFuente:String) {
             if(caracterActual == ':' || caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/' || caracterActual == '%'){
                 lexema+=caracterActual
                 //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+                almacenarToken(lexema, Categoria.OPERADOR_ASIGNACION, filaInicial, columnaInicial)
+                return true
+            }
+            //Bactracking BT
+            backTracking(posicionInicial, filaInicial, columnaInicial)
+            return false
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun esOperadorIncremental():Boolean{
+        if( caracterActual == '+'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '+'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
+                return true
+            }
+            //Bactracking BT
+            backTracking(posicionInicial, filaInicial, columnaInicial)
+            return false
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun esOperadorDecremental():Boolean{
+        if( caracterActual == '-'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '-'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
                 return true
             }
             //Bactracking BT
