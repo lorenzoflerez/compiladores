@@ -6,7 +6,7 @@ package co.edu.uniquindio.compiladores.lexico
 class AnalizadorLexico(private var codigoFuente:String) {
 
     private var listaTokens = ArrayList<Token>()
-    var listaErrores = ArrayList<Error>()
+    private var listaErrores = ArrayList<Error>()
 
     private var lexema = ""
     private var posicionActual = 0
@@ -31,6 +31,12 @@ class AnalizadorLexico(private var codigoFuente:String) {
             if (esOperadorRelacional()) continue
             if (esOperadorAritmetico()) continue
             if (esOperadorAsignacion()) continue
+            if (esOperadorIncremental()) continue
+            if (esOperadorDecremental()) continue
+            if (esComentarioDeLinea()) continue
+            if (esComentarioDeBloque()) continue
+            if (esCaracter()) continue
+            if (esCadenaCaracteres()) continue
 
             almacenarToken("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual)
             obtenerSiguienteCaracter()
@@ -61,6 +67,9 @@ class AnalizadorLexico(private var codigoFuente:String) {
         columnaActual = columnaInicial
         caracterActual = codigoFuente[posicionActual]
     }
+
+    private fun reportarError(error: String, fila: Int, columna: Int) =
+        listaErrores.add(Error(error, fila, columna))
 
     private fun actualizarVariables(){
         lexema = ""
@@ -167,36 +176,50 @@ class AnalizadorLexico(private var codigoFuente:String) {
             almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
             return true
         }
-        if( caracterActual == '+'){
-            actualizarVariables()
-            //Transición Inicial
-            lexema += caracterActual
-            obtenerSiguienteCaracter()
-            if( caracterActual == '+'){
+        if( caracterActual == '+' || caracterActual == '-'){
+            return if(subRutinaOperador() == 1){
                 //Bactracking BT
                 backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
-            }
-            else{
+                false
+            } else{
                 lexema += caracterActual
                 //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
-
+                almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
+                true
             }
         }
-        if( caracterActual == '-'){
-            actualizarVariables()
-            //Transición Inicial
-            lexema += caracterActual
-            obtenerSiguienteCaracter()
-            if( caracterActual == '-'){
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun esOperadorIncremental():Boolean{
+        if( caracterActual == '+'){
+            return if(subRutinaOperador() == 0){
                 //Bactracking BT
                 backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
-            }
-            else{ lexema += caracterActual
+                false
+            } else{
+                lexema+=caracterActual
                 //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+                almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
+                true
+            }
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun esOperadorDecremental():Boolean{
+        if( caracterActual == '-'){
+            return if(subRutinaOperador() == 0){
+                //Bactracking BT
+                backTracking(posicionInicial, filaInicial, columnaInicial)
+                false
+            } else{
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
+                true
             }
         }
         //Rechazo inmediato RI
@@ -223,43 +246,171 @@ class AnalizadorLexico(private var codigoFuente:String) {
         return false
     }
 
-    private fun esOperadorIncremental():Boolean{
-        if( caracterActual == '+'){
+    private fun esComentarioDeLinea():Boolean{
+        if( caracterActual == '@'){
             actualizarVariables()
             //Transición Inicial
-            lexema+=caracterActual
+            lexema += caracterActual
             obtenerSiguienteCaracter()
-            if(caracterActual == '+'){
-                lexema+=caracterActual
+            if( caracterActual == '@'){
+                //Bactracking BT
+                backTracking(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+            else{
+                //Bucle
+                while( caracterActual != '\n'){
+                    //Transición
+                    lexema+=caracterActual
+                    obtenerSiguienteCaracter()
+                }
                 //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
+                almacenarToken( lexema, Categoria.COMENTARIO_LINEA, filaInicial, columnaInicial )
                 return true
             }
-            //Bactracking BT
-            backTracking(posicionInicial, filaInicial, columnaInicial)
-            return false
         }
         //Rechazo inmediato RI
         return false
     }
 
-    private fun esOperadorDecremental():Boolean{
-        if( caracterActual == '-'){
+    private fun esComentarioDeBloque():Boolean{
+        if( caracterActual == '@'){
             actualizarVariables()
             //Transición Inicial
             lexema+=caracterActual
             obtenerSiguienteCaracter()
-            if(caracterActual == '-'){
+            if( caracterActual == '@'){
                 lexema+=caracterActual
-                //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
-                return true
+                obtenerSiguienteCaracter()
+                if( caracterActual == '@'){
+                    reportarError("Caracter no válido después del @", filaActual, columnaActual)
+                    return false
+                }
+                else{
+                    while (true){
+                        lexema+=caracterActual
+                        obtenerSiguienteCaracter()
+                        //Bucle
+                        while( caracterActual != '@'){
+                            //Transición
+                            lexema+=caracterActual
+                            obtenerSiguienteCaracter()
+                        }
+                        lexema+=caracterActual
+                        obtenerSiguienteCaracter()
+                        if( caracterActual == '@'){
+                            lexema+=caracterActual
+                            //Aceptación y Almacenamiento AA
+                            almacenarToken(lexema, Categoria.COMENTARIO_BLOQUE, filaInicial, columnaInicial)
+                            return true
+                        }
+                    }
+                }
             }
-            //Bactracking BT
-            backTracking(posicionInicial, filaInicial, columnaInicial)
-            return false
+            else{
+                //Bactracking BT
+                backTracking(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
         }
         //Rechazo inmediato RI
         return false
+    }
+
+    private fun esCaracter():Boolean{
+        if( caracterActual == '\''){
+            actualizarVariables()
+            //Transición Inicial
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+
+            val flag = subRutinaEscape()
+            if( flag == 0 ){
+                return if ( caracterActual == '\''){
+                    //Aceptación y Almacenamiento AA
+                    almacenarToken(lexema, Categoria.CARACTER, filaInicial, columnaInicial)
+                    true
+                } else{
+                    //Reporte de Error RE
+                    reportarError("Caracter no válido, no se cerro con \'", filaActual, columnaActual)
+                    true
+                }
+            }
+            if(flag == 1){
+                reportarError("Caracter no válido después del \'", filaActual, columnaActual)
+                return false
+            }
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun esCadenaCaracteres():Boolean{
+        if( caracterActual == '"'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+
+            while (caracterActual != '"' ){
+                val flag = subRutinaEscape()
+                if(flag == 1){
+                    reportarError("Caracter no válido después del \'", filaActual, columnaActual)
+                    return false
+                }
+            }
+            //Aceptación y Almacenamiento AA
+            lexema += caracterActual
+            almacenarToken(lexema, Categoria.CADENA_CARACTERES, filaInicial, columnaInicial)
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    private fun subRutinaEscape():Int{
+        var flag = 2
+        while(flag == 2){
+            if(caracterActual=='\\'){
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                //Validación caracteres de escape.
+                if( caracterActual == 'b' || caracterActual == 'n' || caracterActual == 't' || caracterActual == 'r'){
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                }
+                else{
+                    if( caracterActual == '\\' || caracterActual == '\''){
+                        lexema += caracterActual
+                        obtenerSiguienteCaracter()
+                        flag = 0
+                    }
+                    else{
+                        //Reporte de Error RE
+                        flag = 1
+                    }
+                }
+            }
+            //Cualquier simbolo fuera del bucle de Escape
+            else{
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                flag = 0
+            }
+        }
+        return flag
+    }
+
+    private fun subRutinaOperador():Int{
+        actualizarVariables()
+        //Transición Inicial
+        lexema += caracterActual
+        val operador = caracterActual
+        obtenerSiguienteCaracter()
+        return if( operador == caracterActual){
+            1
+        } else{
+            0
+        }
     }
 }
