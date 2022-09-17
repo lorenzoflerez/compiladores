@@ -7,7 +7,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
 
     var listaTokens = ArrayList<Token>()
     private var listaErrores = ArrayList<Error>()
-
+    private var keys = KeyWords()
     private var lexema = ""
     private var posicionActual = 0
     private var caracterActual = codigoFuente[0]
@@ -26,19 +26,14 @@ class AnalizadorLexico(private var codigoFuente:String) {
                 continue
             }
             //Bloque de validacion Tokens.
-            if (esEntero()) continue
-            if (esDecimal()) continue
-            if (esOperadorLogico()) continue
-            if (esOperadorRelacional()) continue
-            if (esOperadorAritmetico()) continue
-            if (esOperadorAsignacion()) continue
-            if (esOperadorIncremental()) continue
-            if (esOperadorDecremental()) continue
-            if (esComentarioDeLinea()) continue
-            if (esComentarioDeBloque()) continue
+            if (esNumero()) continue
+            if (esOperadorNumerico()) continue
+            if (esAsignacionOBooleano()) continue
+            if (esComentario()) continue
             if (esCaracter()) continue
             if (esCadenaCaracteres()) continue
             if (esCaracterEspecial()) continue
+            if (esIdentificador()) continue
             if (esFinCodigo()) continue
 
             almacenarToken("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual)
@@ -81,127 +76,85 @@ class AnalizadorLexico(private var codigoFuente:String) {
         posicionInicial = posicionActual
     }
 
-    private fun esEntero():Boolean{
-        if ( caracterActual.isDigit() ){
+    private fun esNumero():Boolean{
+        if ( caracterActual.isDigit() ) {
             //Inicialización de variables necesarias para almacenar información
             actualizarVariables()
             //Transición Inicial
-            lexema+=caracterActual
+            lexema += caracterActual
             obtenerSiguienteCaracter()
             //Bucle
-            while( caracterActual.isDigit() ){
+            while (caracterActual.isDigit()) {
                 //Transición
-                lexema+=caracterActual
+                lexema += caracterActual
                 obtenerSiguienteCaracter()
             }
-            //Bactracking BT
-            if ( caracterActual == '.' ){
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
-            }
-            //Aceptación y Almacenamiento AA
-            almacenarToken( lexema, Categoria.ENTERO, filaInicial, columnaInicial )
-            return true
-        }
-        //Rechazo inmediato RI
-        return false
-    }
 
-    private fun esDecimal():Boolean{
-        if ( caracterActual.isDigit() ){
-            //Inicialización de variables necesarias para almacenar información
-            actualizarVariables()
-            //Transición Inicial
-            lexema+=caracterActual
-            obtenerSiguienteCaracter()
-            //Bucle
-            while( caracterActual.isDigit() ){
-                //Transición
-                lexema+=caracterActual
-                obtenerSiguienteCaracter()
-            }
+            val lexemabt = lexema
+            val posicionbt = posicionActual
+            val filabt = filaActual
+            val columnabt = columnaActual
+
             if ( caracterActual == '.' ){
-                lexema+=caracterActual
+                lexema += caracterActual
                 obtenerSiguienteCaracter()
-                if(caracterActual.isDigit()){
-                    lexema+=caracterActual
+                if (caracterActual.isDigit()) {
+                    lexema += caracterActual
                     obtenerSiguienteCaracter()
-                    while( caracterActual.isDigit() ){
+                    while (caracterActual.isDigit()) {
                         //Transición
-                        lexema+=caracterActual
+                        lexema += caracterActual
                         obtenerSiguienteCaracter()
                     }
+                    //Aceptación y Almacenamiento AA Decimal (DD.DD)
+                    almacenarToken( lexema, Categoria.DECIMAL, filaInicial, columnaInicial )
+                    return true
                 }
                 else{
-                    //Bactracking BT
-                    backTracking(posicionInicial, filaInicial, columnaInicial)
+                    //Backtracking BT 2
+                    lexema = lexemabt
+                    posicionActual = posicionbt
+                    filaActual = filabt
+                    columnaActual = columnabt
+                    //Aceptación y Almacenamiento AA Entero
+                    almacenarToken( lexema, Categoria.ENTERO, filaInicial, columnaInicial )
+                    almacenarToken( ".", Categoria.PUNTO, filaActual, columnaActual )
+                    obtenerSiguienteCaracter()
                     return false
                 }
             }
-            //Aceptación y Almacenamiento AA
-            almacenarToken( lexema, Categoria.DECIMAL, filaInicial, columnaInicial )
-            return true
+            else{
+                //Backtracking BT 1
+                //Aceptación y Almacenamiento AA Entero
+                almacenarToken( lexema, Categoria.ENTERO, filaInicial, columnaInicial )
+                return true
+            }
         }
         //Rechazo inmediato RI
         return false
     }
 
-    private fun esOperadorLogico():Boolean{
-        if ( caracterActual == '&' || caracterActual == '|' ){
+    private fun esIdentificador():Boolean{
+        if(caracterActual.isLetter()){
             actualizarVariables()
-            //Transición Inicial
-            lexema+=caracterActual
-            //Aceptación y Almacenamiento AA
-            almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
-            obtenerSiguienteCaracter()
-            return true
-        }
-        if ( caracterActual == '¬' ){
-            actualizarVariables()
-            //Transición Inicial
-            lexema += caracterActual
-            obtenerSiguienteCaracter()
-            //Bactracking BT
-            if ( caracterActual == '=' ){
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
-            }
-            //Aceptación y Almacenamiento AA
-            almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
-            return true
-        }
-        //Rechazo inmediato RI
-        return false
-    }
+            subrutinaConcatenar()
 
-    private fun esOperadorRelacional():Boolean{
-        if( caracterActual == '<' || caracterActual == '>'){
-            actualizarVariables()
-            //Transición Inicial
-            lexema += caracterActual
-            obtenerSiguienteCaracter()
-            if ( caracterActual == '=' ){
-                lexema += caracterActual
+            //esPalabraReservada()
+            return if(keys.getPalabras().contains(lexema)){
+                almacenarToken(lexema, Categoria.PALABRA_RESERVADA, filaInicial, columnaInicial)
+                true
+            } else{
+                almacenarToken(lexema, Categoria.IDENTIFICADOR, filaInicial, columnaInicial)
+                true
             }
-            else {
-                //Bactracking BT
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-            }
-            //Aceptación y Almacenamiento AA
-            almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
-            obtenerSiguienteCaracter()
-            return true
         }
-        if ( caracterActual == '¬' || caracterActual == '='){
+        if(caracterActual=='_' ||  caracterActual=='$'){
             actualizarVariables()
-            //Transición Inicial
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            return if ( caracterActual == '=' ){
-                //Aceptación y Almacenamiento AA
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
+            return if (caracterActual.isLetter()){
+                subrutinaConcatenar()
+                almacenarToken(lexema,Categoria.IDENTIFICADOR,filaInicial,columnaInicial)
                 true
             } else{
                 //Bactracking BT
@@ -213,25 +166,67 @@ class AnalizadorLexico(private var codigoFuente:String) {
         return false
     }
 
-    private fun esOperadorAritmetico():Boolean{
-        if( caracterActual == '*' || caracterActual == '/' || caracterActual == '%' ){
+    private fun esAsignacionOBooleano():Boolean{
+        val operador = "<>=¬|&"
+        if(operador.contains(caracterActual)){
             actualizarVariables()
             //Transición Inicial
             lexema += caracterActual
-            //Aceptación y Almacenamiento AA
-            almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
-            return true
-        }
-        else{
-            if( caracterActual == '+' || caracterActual == '-'){
-                return if(subRutinaOperador() == 1){
-                    //Bactracking BT
-                    backTracking(posicionInicial, filaInicial, columnaInicial)
-                    false
-                } else{
-                    //Aceptación y Almacenamiento AA
-                    almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
-                    true
+
+            when(caracterActual){
+                '&','|' -> {
+                    obtenerSiguienteCaracter()
+                    //Aceptación y Almacenamiento AA Operador Lógico & | '|'
+                    almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
+                    return true
+                }
+                '<','>' ->{
+                    obtenerSiguienteCaracter()
+                    if (caracterActual == '='){
+                        lexema += caracterActual
+                        obtenerSiguienteCaracter()
+                    }
+                    //Aceptación y Almacenamiento AA Operador relacional < | <= | > | >=
+                    almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
+                    return true
+                }
+                '¬' -> {
+                    obtenerSiguienteCaracter()
+                    if (caracterActual == '='){
+                        lexema += caracterActual
+                        obtenerSiguienteCaracter()
+                        //Aceptación y Almacenamiento AA Operador relacional ¬=
+                        almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
+                        return true
+                    }
+                    //Aceptación y Almacenamiento AA Operador Lógico ¬
+                    almacenarToken(lexema, Categoria.OPERADOR_LOGICO, filaInicial, columnaInicial)
+                    return true
+                }
+                '=' -> {
+                    obtenerSiguienteCaracter()
+
+                    when (caracterActual) {
+                        ':', '+', '-', '*', '/', '%' -> {
+                            lexema += caracterActual
+                            //Aceptación y Almacenamiento AA Operador Asignación =: | =+ | =- | =* | =/ | =%
+                            almacenarToken(lexema, Categoria.OPERADOR_ASIGNACION, filaInicial, columnaInicial)
+                            obtenerSiguienteCaracter()
+                            return true
+                        }
+                        '=' -> {
+                            lexema += caracterActual
+                            //Aceptación y Almacenamiento AA Operador Relacional ==
+                            almacenarToken(lexema, Categoria.OPERADOR_RELACIONAL, filaInicial, columnaInicial)
+                            obtenerSiguienteCaracter()
+                            return true
+                        }
+                        else -> {
+                            //BackTracking BT '='
+                            backTracking(posicionInicial, filaInicial, columnaInicial)
+                            return false
+                        }
+                    }
                 }
             }
         }
@@ -239,143 +234,90 @@ class AnalizadorLexico(private var codigoFuente:String) {
         return false
     }
 
-    private fun esOperadorIncremental():Boolean{
-        if( caracterActual == '+'){
-            return if(subRutinaOperador() == 0){
-                //Bactracking BT
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                false
-            } else{
-                lexema+=caracterActual
-                //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                true
-            }
-        }
-        //Rechazo inmediato RI
-        return false
-    }
-
-    private fun esOperadorDecremental():Boolean{
-        if( caracterActual == '-'){
-            return if(subRutinaOperador() == 0){
-                //Bactracking BT
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                false
-            } else{
-                lexema+=caracterActual
-                //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
-                true
-            }
-        }
-        //Rechazo inmediato RI
-        return false
-    }
-
-    private fun esOperadorAsignacion():Boolean{
-        if( caracterActual == '='){
+    private fun esOperadorNumerico():Boolean{
+        val operadorNumerico = "+-*/%"
+        // + | - | * | / | %
+        if (operadorNumerico.contains(caracterActual)){
             actualizarVariables()
             //Transición Inicial
-            lexema+=caracterActual
-            obtenerSiguienteCaracter()
-            if(caracterActual == ':' || caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/' || caracterActual == '%'){
-                lexema+=caracterActual
-                //Aceptación y Almacenamiento AA
-                almacenarToken(lexema, Categoria.OPERADOR_ASIGNACION, filaInicial, columnaInicial)
+            lexema += caracterActual
+            if(caracterActual == '+' || caracterActual == '-') {
+                val operador = caracterActual
+                obtenerSiguienteCaracter()
+                // + | -
+                if(operador != caracterActual)
+                    //Aceptación y Almacenamiento AA operador aritmético
+                    almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+                else{
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                    // --
+                    if(caracterActual=='-')
+                        //Aceptación y Almacenamiento AA operador decremental
+                        almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
+                    // ++
+                    else
+                        //Aceptación y Almacenamiento AA operador incremental
+                        almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
+                }
+                return true
+            }
+            else{
+                //Aceptación y Almacenamiento AA operador aritmético * | / | %
+                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
                 obtenerSiguienteCaracter()
                 return true
             }
-            //Bactracking BT
-            backTracking(posicionInicial, filaInicial, columnaInicial)
-            return false
         }
         //Rechazo inmediato RI
         return false
     }
 
-    private fun esComentarioDeLinea():Boolean{
+    private fun esComentario():Boolean{
         if( caracterActual == '@'){
             actualizarVariables()
             //Transición Inicial
             lexema += caracterActual
             obtenerSiguienteCaracter()
+            //Transición comentario de bloque - else Backtracking BT comentario de linea.
             if( caracterActual == '@'){
-                //Bactracking BT
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
+                lexema+=caracterActual
+                obtenerSiguienteCaracter()
+                //Bucle Comentario de Bloque.
+                while(true){
+                    if(caracterActual == '@'){
+                        lexema+=caracterActual
+                        obtenerSiguienteCaracter()
+                        //Validación cierre comentario de Bloque
+                        if(caracterActual == '@'){
+                            lexema+=caracterActual
+                            //Aceptación y Almacenamiento AA Comentario de Bloque @@(cos)@@
+                            almacenarToken(lexema, Categoria.COMENTARIO_BLOQUE, filaInicial, columnaInicial)
+                            obtenerSiguienteCaracter()
+                            return true
+                        }
+                    }
+                    else if(caracterActual == finCodigo){
+                        val auxiliar = lexema.substring(0 ,lexema.length-1)
+                        //Aceptación y Almacenamiento AA Comentario de linea @@(cos)
+                        almacenarToken(auxiliar, Categoria.COMENTARIO_BLOQUE_SIN_CERRAR, filaInicial, columnaInicial)
+                        return true
+                    }
+                    //Transición
+                    lexema+=caracterActual
+                    obtenerSiguienteCaracter()
+                }
             }
             else{
-                //Bucle
+                //Bucle Comentario de linea.
                 while( caracterActual != '\n' && caracterActual != finCodigo ){
                     //Transición
                     lexema+=caracterActual
                     obtenerSiguienteCaracter()
                 }
-                //Aceptación y Almacenamiento AA
+                //Aceptación y Almacenamiento AA Comentario de linea @(cos)\n
                 almacenarToken( lexema, Categoria.COMENTARIO_LINEA, filaInicial, columnaInicial )
                 return true
-            }
-        }
-        //Rechazo inmediato RI
-        return false
-    }
-
-    private fun esComentarioDeBloque():Boolean{
-        if( caracterActual == '@'){
-            actualizarVariables()
-            //Transición Inicial
-            lexema+=caracterActual
-            obtenerSiguienteCaracter()
-            if( caracterActual == '@'){
-                lexema+=caracterActual
-                obtenerSiguienteCaracter()
-                if( caracterActual == '@'){
-                    reportarError("Caracter no válido después del @", filaActual, columnaActual)
-                    obtenerSiguienteCaracter()
-                    return false
-                }
-                else if(caracterActual == finCodigo){
-                    almacenarToken(lexema, Categoria.COMENTARIO_BLOQUE_SIN_CERRAR, filaInicial, columnaInicial)
-                    return true
-                }
-                else{
-                    while ( caracterActual != finCodigo){
-                        lexema+=caracterActual
-                        obtenerSiguienteCaracter()
-                        //Bucle
-                        while( caracterActual != '@' && caracterActual != finCodigo){
-                            //Transición
-                            lexema+=caracterActual
-                            obtenerSiguienteCaracter()
-                        }
-                        lexema+=caracterActual
-                        obtenerSiguienteCaracter()
-                        if( caracterActual == '@'){
-                            lexema+=caracterActual
-                            //Aceptación y Almacenamiento AA
-                            almacenarToken(lexema, Categoria.COMENTARIO_BLOQUE, filaInicial, columnaInicial)
-                            obtenerSiguienteCaracter()
-                            return true
-                        }
-                        else if(caracterActual == finCodigo){
-                            val auxiliar = lexema.substring(0 ,lexema.length-1)
-                            almacenarToken(auxiliar, Categoria.COMENTARIO_BLOQUE_SIN_CERRAR, filaInicial, columnaInicial)
-                            return true
-                        }
-                        else{
-                            lexema += caracterActual
-                            almacenarToken(lexema, Categoria.COMENTARIO_BLOQUE_SIN_CERRAR, filaInicial, columnaInicial)
-                            return true
-                        }
-                    }
-                }
-            }
-            else{
-                //Bactracking BT
-                backTracking(posicionInicial, filaInicial, columnaInicial)
-                return false
             }
         }
         //Rechazo inmediato RI
@@ -445,61 +387,23 @@ class AnalizadorLexico(private var codigoFuente:String) {
     }
 
     private fun esCaracterEspecial():Boolean{
-        when(caracterActual){
-            '(' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.PARENTESIS_IZQUIERDO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
+        val caracteresEspeciales = "()[]{}.,;"
+        if (caracteresEspeciales.contains(caracterActual)){
+            actualizarVariables()
+            lexema += caracterActual
+            when(caracterActual){
+                '(' -> almacenarToken(lexema, Categoria.PARENTESIS_IZQUIERDO, filaInicial, columnaInicial)
+                ')' -> almacenarToken(lexema, Categoria.PARENTESIS_DERECHO, filaInicial, columnaInicial)
+                '[' -> almacenarToken(lexema, Categoria.CORCHETE_IZQUIERDO, filaInicial, columnaInicial)
+                ']' -> almacenarToken(lexema, Categoria.CORCHETE_DERECHO, filaInicial, columnaInicial)
+                '{' -> almacenarToken(lexema, Categoria.LLAVE_IZQUIERDA, filaInicial, columnaInicial)
+                '}' -> almacenarToken(lexema, Categoria.LLAVE_DERECHA, filaInicial, columnaInicial)
+                '.' -> almacenarToken(lexema, Categoria.PUNTO, filaInicial, columnaInicial)
+                ',' -> almacenarToken(lexema, Categoria.SEPARADOR, filaInicial, columnaInicial)
+                ';' -> almacenarToken(lexema, Categoria.FIN_SENTENCIA, filaInicial, columnaInicial)
             }
-            ')' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.PARENTESIS_DERECHO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            '[' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.CORCHETE_IZQUIERDO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            ']' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.CORCHETE_DERECHO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            '{' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.LLAVE_IZQUIERDA, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            '}' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.LLAVE_DERECHA, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            '.' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.PUNTO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            ',' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.SEPARADOR, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
-            ';' -> { actualizarVariables()
-                lexema += caracterActual
-                almacenarToken(lexema, Categoria.FIN_SENTENCIA, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
-            }
+            obtenerSiguienteCaracter()
+            return true
         }
         //Rechazo inmediato RI
         return false
@@ -541,19 +445,13 @@ class AnalizadorLexico(private var codigoFuente:String) {
         }
     }
 
-    private fun subRutinaOperador():Int{
-        actualizarVariables()
-        //Transición Inicial
-        lexema += caracterActual
-        val operador = caracterActual
-        obtenerSiguienteCaracter()
-        return if( operador == caracterActual){
-            1
-        } else{
-            0
+    private fun subrutinaConcatenar(){
+        while( lexema.length < 10){
+            if (caracterActual=='_' ||  caracterActual.isLetter() || caracterActual.isDigit()){
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            else return
         }
     }
-
-
-
 }

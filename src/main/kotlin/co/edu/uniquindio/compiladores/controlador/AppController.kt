@@ -35,12 +35,4 @@ class AppController {
             print(lexico.listaTokens)
         }
     }
-
-    fun initialize(location: URL?, resources: ResourceBundle?) {
-        colLexema.cellValueFactory = PropertyValueFactory("lexema")
-        colCategoria.cellValueFactory = PropertyValueFactory("categoria")
-        colFila.cellValueFactory = PropertyValueFactory("fila")
-        colColumna.cellValueFactory = PropertyValueFactory("columna")
-    }
-
 }
