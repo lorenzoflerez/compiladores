@@ -191,6 +191,157 @@ class AnalizadorLexico(private var codigoFuente:String) {
         //Rechazo inmediato RI
         return false
     }
+    
+     private fun esLlaveApertura():Boolean{
+        if( caracterActual == '{'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '{'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.OPERADOR_APERTURA, filaInicial, columnaInicial)
+                return true
+            }
+  //Rechazo inmediato RI
+        return false
+    }
+
+
+ private fun esLlaveCierre():Boolean{
+        if( caracterActual == '}'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '}'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.LLAVE_CIERRE, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+
+ private fun esPunto():Boolean{
+        if( caracterActual == '.'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '.'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.ES_PUNTO, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+
+ private fun esParentesisApertura():Boolean{
+        if( caracterActual == '('){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '('){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.PARENTESIS_APERTURA, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+
+ private fun esParentesisCierre():Boolean{
+        if( caracterActual == ')'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == ')'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.PARENTESIS_CIERRE, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+
+
+ private fun esComaSeparador():Boolean{
+        if( caracterActual == ','){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == ','){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.COMA_SEPARADOR, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+ private fun esCorcheteApertura():Boolean{
+        if( caracterActual == '['){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == '['){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.CORCHETE_APERTURA, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+ private fun esCorcheteCierre():Boolean{
+        if( caracterActual == ']'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == ']'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.CORCHETE_CIERRE, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+
+ private fun esFinDeSentencia():Boolean{
+        if( caracterActual == ';'){
+            actualizarVariables()
+            //Transición Inicial
+            lexema+=caracterActual
+            obtenerSiguienteCaracter()
+            if(caracterActual == ';'){
+                lexema+=caracterActual
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.FIN_SENTENCIA, filaInicial, columnaInicial)
+                return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
 
     private fun esOperadorIncremental():Boolean{
         if( caracterActual == '+'){
