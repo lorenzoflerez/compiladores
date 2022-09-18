@@ -34,7 +34,6 @@ class AnalizadorLexico(private var codigoFuente:String) {
             if (esCadenaCaracteres()) continue
             if (esCaracterEspecial()) continue
             if (esIdentificador()) continue
-            if (esFinCodigo()) continue
 
             almacenarToken("" + caracterActual, Categoria.DESCONOCIDO, filaActual, columnaActual)
             obtenerSiguienteCaracter()
@@ -92,8 +91,8 @@ class AnalizadorLexico(private var codigoFuente:String) {
 
             val lexemabt = lexema
             val posicionbt = posicionActual
-            val filabt = filaActual
-            val columnabt = columnaActual
+            val filaBt = filaActual
+            val columnaBt = columnaActual
 
             if ( caracterActual == '.' ){
                 lexema += caracterActual
@@ -114,8 +113,8 @@ class AnalizadorLexico(private var codigoFuente:String) {
                     //Backtracking BT 2
                     lexema = lexemabt
                     posicionActual = posicionbt
-                    filaActual = filabt
-                    columnaActual = columnabt
+                    filaActual = filaBt
+                    columnaActual = columnaBt
                     //Aceptación y Almacenamiento AA Entero
                     almacenarToken( lexema, Categoria.ENTERO, filaInicial, columnaInicial )
                     almacenarToken( ".", Categoria.PUNTO, filaActual, columnaActual )
@@ -157,7 +156,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
                 almacenarToken(lexema,Categoria.IDENTIFICADOR,filaInicial,columnaInicial)
                 true
             } else{
-                //Bactracking BT
+                //Backtracking BT
                 backTracking(posicionInicial, filaInicial, columnaInicial)
                 false
             }
@@ -331,28 +330,29 @@ class AnalizadorLexico(private var codigoFuente:String) {
             lexema += caracterActual
             obtenerSiguienteCaracter()
             if( caracterActual == '\''){
-                //Reporte de Error RE
-                reportarError("Caracter no válido, no se cerro con \'", filaActual, columnaActual)
-                obtenerSiguienteCaracter()
+                //Reporte de Error RE '', carácter vacío
+                reportarError("Carácter vacío", filaActual, columnaActual)
+                backTracking(posicionInicial, filaInicial, columnaInicial)
                 return false
             }
-            val flag = subRutinaEscape()
-            if( flag == 0 ){
+            if( !subRutinaEscape() ){
                 return if ( caracterActual == '\''){
                     lexema += caracterActual
-                    //Aceptación y Almacenamiento AA
+                    //Aceptación y Almacenamiento AA Carácter 'c.s'
                     almacenarToken(lexema, Categoria.CARACTER, filaInicial, columnaInicial)
                     obtenerSiguienteCaracter()
                     true
                 } else{
-                    almacenarToken(lexema, Categoria.CARACTER, filaInicial, columnaInicial)
-                    //Reporte de Error RE
-                    reportarError("Caracter no válido, no se cerro con \'", filaActual, columnaActual)
-                    true
+                    //Reporte de Error RE carácter sin cerrar 'c.s
+                    reportarError("Carácter no válido, no se cerro con \'", filaActual, columnaActual)
+                    backTracking(posicionInicial, filaInicial, columnaInicial)
+                    false
                 }
             }
-            if(flag == 1){
+            else {
+                //Reporte de error carácter de escape no valido.
                 reportarError("Caracter no válido después del \'", filaActual, columnaActual)
+                backTracking(posicionInicial, filaInicial, columnaInicial)
                 return false
             }
         }
@@ -366,21 +366,27 @@ class AnalizadorLexico(private var codigoFuente:String) {
             //Transición Inicial
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            while (caracterActual != '"' && caracterActual != finCodigo){
-                val flag = subRutinaEscape()
-                if(flag == 1){
-                    reportarError("Caracter no válido después del \'", filaActual, columnaActual)
+            while (true){
+                if(caracterActual=='"') {
+                    //Aceptación y Almacenamiento AA CAdena de caracteres
+                    lexema += caracterActual
+                    almacenarToken(lexema, Categoria.CADENA_CARACTERES, filaInicial, columnaInicial)
+                    obtenerSiguienteCaracter()
+                    return true
+                }
+                if( subRutinaEscape() ){
+                    //Reporte de error carácter de escape no valido.
+                    reportarError("Carácter no válido después del \'", filaActual, columnaActual)
+                    backTracking(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+                if (caracterActual == finCodigo){
+                    reportarError("Cadena de Caracteres Sin cerrar", filaActual, columnaActual)
+                    //Backtracking BT
+                    backTracking(posicionInicial, filaInicial, columnaInicial)
                     return false
                 }
             }
-            if (caracterActual == finCodigo){
-                return false
-            }
-            //Aceptación y Almacenamiento AA
-            lexema += caracterActual
-            almacenarToken(lexema, Categoria.CADENA_CARACTERES, filaInicial, columnaInicial)
-            obtenerSiguienteCaracter()
-            return true
         }
         //Rechazo inmediato RI
         return false
@@ -409,13 +415,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
         return false
     }
 
-    private fun esFinCodigo(): Boolean{
-        if (caracterActual == finCodigo)
-            return true
-        return false
-    }
-
-    private fun subRutinaEscape():Int{
+    private fun subRutinaEscape():Boolean{
         while(true){
             if(caracterActual=='\\'){
                 lexema += caracterActual
@@ -429,18 +429,18 @@ class AnalizadorLexico(private var codigoFuente:String) {
                     return if( caracterActual == '\\' || caracterActual == '\'' || caracterActual == '"'){
                         lexema += caracterActual
                         obtenerSiguienteCaracter()
-                        0
+                        false
                     } else{
                         //Reporte de Error RE
-                        1
+                        true
                     }
                 }
             }
-            //Cualquier simbolo fuera del bucle de Escape
+            //Cualquier símbolo fuera del bucle de Escape
             else {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
-                return 0
+                return false
             }
         }
     }
