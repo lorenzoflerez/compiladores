@@ -6,6 +6,7 @@ import co.edu.uniquindio.compiladores.lexico.Token
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
+import javafx.fxml.Initializable
 import javafx.scene.control.Label
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
@@ -14,7 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
 import java.util.*
 
-class AppController {
+class AppController : Initializable{
 
     @FXML lateinit var codigoFuente:TextArea
 
@@ -32,7 +33,13 @@ class AppController {
             val lexico = AnalizadorLexico(codigoFuente.text)
             lexico.analizar()
             tableTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
-            print(lexico.listaTokens)
         }
+    }
+
+    override fun initialize(location: URL?, resources: ResourceBundle?) {
+        colLexema.cellValueFactory = PropertyValueFactory("lexema")
+        colCategoria.cellValueFactory = PropertyValueFactory("categoria")
+        colFila.cellValueFactory = PropertyValueFactory("fila")
+        colColumna.cellValueFactory = PropertyValueFactory("columna")
     }
 }

@@ -26,7 +26,12 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'co.edu.uniquindio.compiladores.app'
-    mainClass = 'co.edu.uniquindio.compiladores.app.HelloApplication'
+    mainClass = 'co.edu.uniquindio.compiladores.app.App'
+}
+
+java {
+    // this enables Java Modularity in Gradle (version 6.7 and above)
+    modularity.inferModulePath.set(true)
 }
 
 [compileKotlin, compileTestKotlin].forEach {
@@ -37,7 +42,7 @@ application {
 
 javafx {
     version = '17.0.2'
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
 }
 
 dependencies {

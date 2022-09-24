@@ -1,5 +1,6 @@
 module co.edu.uniquindio.compiladores.app {
     requires javafx.controls;
+    requires javafx.base;
     requires javafx.fxml;
     requires kotlin.stdlib;
 
@@ -8,5 +9,6 @@ module co.edu.uniquindio.compiladores.app {
     requires org.kordamp.bootstrapfx.core;
 
     opens co.edu.uniquindio.compiladores.controlador to javafx.fxml;
+    opens co.edu.uniquindio.compiladores.lexico to javafx.base;
     exports co.edu.uniquindio.compiladores.app;
 }
