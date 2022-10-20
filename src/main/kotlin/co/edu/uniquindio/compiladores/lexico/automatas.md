@@ -1,3 +1,3 @@
 Automatas
 
-![Image text](src/main/resources/automatas.png)
+![Image text](compilador/src/main/resources/automatas.png)
