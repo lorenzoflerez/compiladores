@@ -2,11 +2,13 @@
 
 
 ```ecma script level 4
-<UnidadDeCompilacion> ::= class identificador begin [<ListaImport>] <BloqueFunciones> end
+<UnidadDeCompilacion> ::= class identificador begin [<BloqueImports>] <BloqueFunciones> end
 
-<ListaImport> ::= include llaveIzquierda <Import> llaveDerecha
+<BloqueImports> ::= include llaveIzquierda <ListaImports> llaveDerecha 
 
-<Import> ::= identificador; [<Import>]
+<ListaImports> ::= <Import> [, <ListaImports>]
+
+<Import> ::= identificador;
 
 <BloqueFunciones> ::= llaveIzquierda <ListaFunciones> llaveDerecha 
 
@@ -24,35 +26,27 @@
 
 <Sentencia> ::= <DeclaracionVariable> | <DeclaracionArreglo> | <Asignacion> | <Lectura> | <Impresion> | <InvocacionFuncion> | <Decision> | <Ciclo> | <Seleccion> | <Retorno> | <Control> | <Incremento> | <Decremento>
 
-<DeclaracionVariable> ::= <DeclaracionVariable> | <Variables> | <Constantes>
-
-<Variables> ::= <Variables> | <Variable>
+<DeclaracionVariable> ::= <Variable> | <Constante>
 
 <Variable> ::= var <Tipodato> identificador [operadorAsignacion <Expresion>];
 
-<Constantes> ::= <Constantes> | <Constante>
+<Constante> ::= const <Tipodato> identificador operadorAsignacion <Expresion>;  
 
-<Constante> ::= const <Tipodato> identificador =: <Expresion>;  
+<DeclaracionArreglo> ::= array <Tipodato> identificador operadorAsignacion corcheteIzquierdo <Expresion> corcheteDerecho;
 
-<DeclaracionArreglo> ::= array <Tipodato> identificador =: corcheteIzquierdo <ListaExpresiones> corcheteDerecho;
-
-<Asignacion> ::= identificador operadorAsignacion <Expresion> |  identificador =: corcheteIzquierdo <ListaExpresiones> corcheteDerecho;
+<Asignacion> ::= identificador operadorAsignacion <Expresion> 
 
 <Lectura> ::= read identificador ;
 
-<Impresion> ::= print : <ListaExpresiones>
+<Impresion> ::= print : <Expresion>
 
-<InvocacionFuncion> ::= new identificador (<ListaParametros>); 
+<InvocacionFuncion> ::= new identificador ([<ListaParametros>]); 
 
-<Incremento> ::= identificador operadorIncremento | operadorIncremento identificador
+<Incremento> ::= operadorIncremento identificador
 
-<Decremento> ::= identificador operadorDecremento | operadorDecremento identificador
+<Decremento> ::= operadorDecremento identificador
 
-<Condicional> ::= if (<ExpresionLogica>) do <BloqueSentencias> [<BloqueAlternativa>] [else <BloqueSentencias>]
-
-<BloqueAlternativa> ::= <Alternativa> [<BloqueAlternativa>]
-
-<Alternativa> ::= else if (<ExpresionLogica>) do <BloqueSentencias>
+<Condicional> ::= if (<ExpresionLogica>) do <BloqueSentencias> [else <BloqueSentencias>]
 
 <Ciclo> ::= <CicloFor> | <CicloWhile> | <CicloDoWhile>
 
@@ -64,9 +58,9 @@
 
 <Seleccion> ::= switch (<Expresion>) do <BloqueOpciones>
 
-<BloqueOpciones> ::= llaveIzquierda <Opciones> llaveDerecha
+<BloqueOpciones> ::= llaveIzquierda <ListaOpciones> llaveDerecha
 
-<Opciones> ::= <Opciones> <Opcion> [default: <BloqueSentencias> break ;] | <Opcion> [default: <BloqueSentencias> break ;]
+<ListaOpciones> ::= <Opcion> [<ListaOpciones>]
 
 <Opcion> ::= case <Valor> : <BloqueSentencias> break ;
 
@@ -74,9 +68,7 @@
 
 <Control> ::= try <BloqueSentencias> catch (<Tipodato> identificador) continue;
 
-<ListaExpresiones> ::= [<ListaExpresiones>, ] <Expresion>;
-
-<Expresion> ::= <ExpresionCadena> | <ExpresionLogica> | <ExpresionRelacional> | <ExpresionAritmetica> | <InvocacionFuncion>
+<Expresion> ::= <ExpresionCadena> | <ExpresionLogica> | <ExpresionRelacional> | <ExpresionAritmetica>
 
 <ExpresionCadena> ::= cadena [+ <ExpresionCadena>] | identificador
 

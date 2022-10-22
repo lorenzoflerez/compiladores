@@ -1,4 +1,6 @@
 package co.edu.uniquindio.compiladores.sintactico.control
 
-open class Ciclo {
+import co.edu.uniquindio.compiladores.sintactico.sentencia.Sentencia
+
+open class Ciclo: Sentencia() {
 }

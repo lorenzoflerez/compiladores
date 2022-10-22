@@ -407,6 +407,7 @@ class AnalizadorLexico(private var codigoFuente:String) {
                 '.' -> almacenarToken(lexema, Categoria.PUNTO, filaInicial, columnaInicial)
                 ',' -> almacenarToken(lexema, Categoria.SEPARADOR, filaInicial, columnaInicial)
                 ';' -> almacenarToken(lexema, Categoria.FIN_SENTENCIA, filaInicial, columnaInicial)
+                ':' -> almacenarToken(lexema, Categoria.DOS_PUNTOS, filaInicial, columnaInicial)
             }
             obtenerSiguienteCaracter()
             return true
