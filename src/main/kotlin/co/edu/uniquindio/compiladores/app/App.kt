@@ -9,7 +9,7 @@ class App : Application() {
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(App::class.java.getResource("app.fxml"))
         val scene = Scene(fxmlLoader.load())
-        stage.title = "Hello!"
+        stage.title = "Compilador Z!"
         stage.scene = scene
         stage.isResizable = false
         stage.show()

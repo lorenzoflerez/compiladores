@@ -142,6 +142,22 @@
 	-fx-text-fill: #00ff00;
 }
 
+.tree-view, .tree-view:default{
+	-fx-base: #353434;
+	-fx-border-color: 24d6ea;
+	-fx-font-family: Consolas;
+	-fx-highlight-fill: #00ff00;
+	-fx-highlight-text-fill: #4d4a4a;
+	-fx-text-fill: #00ff00;
+	-fx-background-color: #1e2023;
+	-fx-fit-to-height: true;
+}
+
+.tree-cell:expanded, .tree-cell:collapsed{
+	-fx-background-color:transparent  ;
+	-fx-text-fill: #00ff00;
+}
+
 .text-area .scroll-pane .viewport{
     -fx-background-color: transparent;
 }

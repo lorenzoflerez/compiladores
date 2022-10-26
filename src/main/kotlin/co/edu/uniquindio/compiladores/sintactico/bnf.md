@@ -8,7 +8,7 @@
 
 <ListaImports> ::= <Import> [, <ListaImports>]
 
-<Import> ::= identificador;
+<Import> ::= identificador
 
 <BloqueFunciones> ::= llaveIzquierda <ListaFunciones> llaveDerecha 
 
@@ -24,7 +24,7 @@
 
 <ListaSentencias> ::= <Sentencia> [<ListaSentencias>]
 
-<Sentencia> ::= <DeclaracionVariable> | <DeclaracionArreglo> | <Asignacion> | <Lectura> | <Impresion> | <InvocacionFuncion> | <Decision> | <Ciclo> | <Seleccion> | <Retorno> | <Control> | <Incremento> | <Decremento>
+<Sentencia> ::= <DeclaracionVariable> | <DeclaracionArreglo> | <Asignacion> | <Lectura> | <Impresion> | <InvocacionFuncion> | <Condicional> | <Ciclo> | <Seleccion> | <Retorno> | <Control> | <Incremento> | <Decremento>
 
 <DeclaracionVariable> ::= <Variable> | <Constante>
 
@@ -36,9 +36,9 @@
 
 <Asignacion> ::= identificador operadorAsignacion <Expresion> 
 
-<Lectura> ::= read identificador ;
+<Lectura> ::= read identificador;
 
-<Impresion> ::= print : <Expresion>
+<Impresion> ::= print <Expresion>
 
 <InvocacionFuncion> ::= new identificador ([<ListaParametros>]); 
 
@@ -72,9 +72,9 @@
 
 <ExpresionCadena> ::= cadena [+ <ExpresionCadena>] | identificador
 
-<ExpresionLogica> ::= [operadorNegacion] <ExpresionLogica> | (<ExpresionLogica>) | <ExpresionLogica> operadorAND <ExpresionLogica> | <ExpresionLogica> operadorOR <ExpresionLogica> | <ExpresionRelacional> | true | false
+<ExpresionLogica> ::= [ operadorNegacion ] [(] <ExpresionLogica> [)] | <ExpresionLogica> operadorAND <ExpresionLogica> | <ExpresionLogica> operadorOR <ExpresionLogica> | <ExpresionRelacional> | true | false
 
-<ExpresionRelacional> ::= <ExpresionCadena> | <ExpresionAritmetica>	|  <ExpresionRelacional>  operadorRelacional <ExpresionRelacional>
+<ExpresionRelacional> ::= <ExpresionCadena> | <ExpresionAritmetica> | <ExpresionRelacional> operadorRelacional <ExpresionRelacional>
 
 <ExpresionAritmetica> ::= <ExpresionAritmetica> operardorAritmetico <ExpresionAritmetica> | (<ExpresionAritmetica>) |<ValorNumerico> 
 

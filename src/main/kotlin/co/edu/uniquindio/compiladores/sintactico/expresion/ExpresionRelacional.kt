@@ -1,4 +1,4 @@
 package co.edu.uniquindio.compiladores.sintactico.expresion
 
-class ExpresionRelacional {
+class ExpresionRelacional():Expresion() {
 }

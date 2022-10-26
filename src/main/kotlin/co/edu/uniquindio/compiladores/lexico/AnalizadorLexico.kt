@@ -6,7 +6,7 @@ package co.edu.uniquindio.compiladores.lexico
 class AnalizadorLexico(private var codigoFuente:String) {
 
     var listaTokens = ArrayList<Token>()
-    private var listaErrores = ArrayList<Error>()
+    var listaErrores = ArrayList<Error>()
     private var keys = KeyWords()
     private var lexema = ""
     private var posicionActual = 0
