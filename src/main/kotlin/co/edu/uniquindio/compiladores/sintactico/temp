@@ -6,4 +6,8 @@ class panda begin include{oso, asiatico} { function ejemplo(){var int a; } } end
 
 class panda begin include{oso, asiatico} { function ejemplo(){var int a; } function lambda() typeOf float {var int b; }} end
 
-class panda begin include{oso, asiatico} { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal();} function lambda() typeOf float {var int b; delta =+ 989; read libro; print 5;}} end
+class panda begin include{oso, asiatico} { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal(); ++vaca;} function lambda() typeOf float {var int b; delta =+ 989; read libro; print 5;}} end
+
+class panda begin include{oso, asiatico} { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal(); ++vaca;} function lambda() typeOf float {var int b; delta =+ 989; read libro; print 5;}} end
+
+class panda begin include{oso, asiatico} { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal(); ++vaca;} function lambda() typeOf float { if () do{read libro;} else{print 555;}}} end

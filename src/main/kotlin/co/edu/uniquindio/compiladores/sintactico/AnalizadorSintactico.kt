@@ -298,6 +298,12 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
         sentencia = esInvocacionFuncion()
         if(sentencia!=null)
             return sentencia
+        sentencia = esIncremento()
+        if(sentencia!=null)
+            return sentencia
+        sentencia = esDecremento()
+        if(sentencia!=null)
+            return sentencia
         sentencia = esCondicional()
         if(sentencia!=null)
             return sentencia
@@ -311,12 +317,6 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
         if(sentencia!=null)
             return sentencia
         sentencia = esControl()
-        if(sentencia!=null)
-            return sentencia
-        sentencia = esIncremento()
-        if(sentencia!=null)
-            return sentencia
-        sentencia = esDecremento()
         if(sentencia!=null)
             return sentencia
         return null
@@ -542,7 +542,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             if(tokenActual.categoria == Categoria.PARENTESIS_IZQUIERDO){
                 obtenerSiguienteToken()
-                val expresion = esExpresionLogica()
+                val expresion = ExpresionLogica()//esExpresionLogica()
                 if (expresion!=null){
                     if(tokenActual.categoria == Categoria.PARENTESIS_DERECHO){
                         obtenerSiguienteToken()
@@ -551,10 +551,13 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                             val bloqueCondicional = esBloqueSentencias()
                             if (bloqueCondicional!=null){
                                 var bloqueAlternativo : ArrayList<Sentencia>? = null
-                                obtenerSiguienteToken()
                                 if( leerPalabraReservada("else")) {
                                     obtenerSiguienteToken()
+                                    println(tokenActual)
                                     bloqueAlternativo = esBloqueSentencias()
+                                    println("Sentencias : "+bloqueAlternativo)
+                                    println(tokenActual)
+
                                     if (bloqueAlternativo != null) {
                                         obtenerSiguienteToken()
                                     }
@@ -803,8 +806,14 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             if ( tokenActual.categoria == Categoria.IDENTIFICADOR ){
                 val identificadorVariable = tokenActual
+                println(identificadorVariable)
                 obtenerSiguienteToken()
-                return Incremento(identificadorVariable)
+                if (tokenActual.categoria == Categoria.FIN_SENTENCIA){
+                    return Incremento(identificadorVariable)
+                }
+                else{
+                    reportarError("Falta fin de sentencia")
+                }
             }
             else{
                 reportarError("Falta identificador de incremento")
@@ -821,8 +830,14 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             if ( tokenActual.categoria == Categoria.IDENTIFICADOR ){
                 val identificadorVariable = tokenActual
+                println(identificadorVariable)
                 obtenerSiguienteToken()
-                return Decremento(identificadorVariable)
+                if (tokenActual.categoria == Categoria.FIN_SENTENCIA){
+                    return Decremento(identificadorVariable)
+                }
+                else{
+                    reportarError("Falta fin de sentencia")
+                }
             }
             else{
                 reportarError("Falta identificador de decremento")

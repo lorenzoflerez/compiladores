@@ -26,6 +26,7 @@ class Condicional( var expresion: ExpresionLogica, var bloqueSentenciasSi: Array
         raiz.children.add( raizTrue )
 
         if(bloqueSentenciasNo!=null){
+            println("si lo hace")
             val raizFalse = TreeItem("Sentencias si no")
             for (sentencia in bloqueSentenciasNo!!){
                 raizFalse.children.add(sentencia.getArbolVisual())

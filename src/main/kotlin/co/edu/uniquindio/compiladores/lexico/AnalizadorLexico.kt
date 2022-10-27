@@ -251,13 +251,17 @@ class AnalizadorLexico(private var codigoFuente:String) {
                     lexema += caracterActual
                     obtenerSiguienteCaracter()
                     // --
-                    if(caracterActual=='-')
+                    if(caracterActual=='-'){
+                        println("dec" +lexema)
                         //Aceptación y Almacenamiento AA operador decremental
                         almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
+                    }
                     // ++
-                    else
+                    else{
+                        println("incre"+lexema)
                         //Aceptación y Almacenamiento AA operador incremental
                         almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
+                    }
                 }
                 return true
             }
