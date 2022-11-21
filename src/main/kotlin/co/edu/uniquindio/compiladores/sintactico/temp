@@ -1,4 +1,15 @@
+class panda begin { function ejemplo(){}} end
+
+
 class panda begin { function ejemplo(){const int a := 2}} end
+
+class panda begin include{oso, asiatico} { function ejemplo(){const int a := 2}} end
+
+
+class panda begin { function ejemplo(){const int a := 2}} end
+
+
+
 
 class panda begin { function ejemplo(){var int a; } } end
 
@@ -6,4 +17,242 @@ class panda begin include{oso, asiatico} { function ejemplo(){var int a; } } end
 
 class panda begin include{oso, asiatico} { function ejemplo(){var int a; } function lambda() typeOf float {var int b; }} end
 
+class panda begin { function ejemplo(){var int a; } function lambda() typeOf float {var int b; }} end
+
+
+class panda begin { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal();} function lambda() typeOf float {var int b; delta =+ 989; read libro; print 5;}} end
+
 class panda begin include{oso, asiatico} { function suma(int p, int q ){const int a =: 5;  var boolean resultado; new animal();} function lambda() typeOf float {var int b; delta =+ 989; read libro; print 5;}} end
+
+
+
+
+
+
+
+
+
+
+
+
+
+class panda
+       begin
+           include{
+                oso, asiatico
+           }
+           {
+               function ejemplo(){
+                   var int a;
+               }
+               function lambda() typeOf float {
+                   var int b;
+               }
+           }
+       end
+
+
+
+class panda
+       begin
+           include{
+                oso, asiatico
+           }
+           {
+               function ejemplo(){
+                   var int a =: 5;
+                   const int z =: 9;
+               }
+               function lambda() typeOf float {
+                   var int b;
+               }
+           }
+       end
+
+
+class panda
+       begin
+           include{
+                oso, asiatico
+           }
+           {
+               function ejemplo(){
+                   var int a =: 5;
+                   const string z =: "esto es un strin"+'g'+' '+"de prueba";
+                   var string h =: "";
+                   array string myArray =: {"alfa","beta"}
+               }
+               function lambda() typeOf float {
+                   var int b;
+               }
+           }
+       end
+
+class panda
+       begin
+           include{
+                oso, asiatico
+           }
+           {
+               function ejemplo(){
+		           array string myArray =: {"alfa","beta"}
+                   const string z =: "esto es un strin"+'g'+' '+"de prueba";
+                   var char letra =: 'x';
+                   letra =: 'Y';
+               }
+               function lambda() typeOf float {
+                   var int b;
+                   new animal("perro");
+                   --perro
+                   ++perro
+		           read perro;
+		           print "El animal es un perro";
+
+		           if (true) do{
+		               new animal("gato");
+		           }
+               }
+           }
+       end
+
+
+if( tokenActual.categoria == Categoria.PARENTESIS_IZQUIERDO ){
+            obtenerSiguienteToken()
+            val expresionIzquierda = esExpresionLogica()
+            if( expresionIzquierda != null){
+                if (tokenActual.categoria == Categoria.PARENTESIS_DERECHO ){
+                    obtenerSiguienteToken()
+                    if( tokenActual.categoria == Categoria.OPERADOR_RELACIONAL ){
+                        val operador = tokenActual
+                        obtenerSiguienteToken()
+                        val expresionDerecha = esExpresionLogica()
+                        if( expresionDerecha != null){
+                            return ExpresionLogica(expresionIzquierda, operador, expresionDerecha)
+                        }
+                    }
+                    else{
+                        return ExpresionLogica(expresionIzquierda)
+                    }
+                }
+            }
+        }
+        else{
+            val valorLogico = esValorLogico()
+            if( valorLogico != null){
+                obtenerSiguienteToken()
+                if( tokenActual.categoria == Categoria.OPERADOR_LOGICO){
+                    if( tokenActual.lexema == "&" ||  tokenActual.lexema == "|"){
+                        val operadorBinario = tokenActual
+                        obtenerSiguienteToken()
+                        val expresion = esExpresionLogica()
+                        if( expresion != null){
+                            return ExpresionLogica(valorLogico, operadorBinario, expresion)
+                        }
+                    }
+                }
+                else{
+                    return ExpresionLogica(valorLogico)
+                }
+            }
+        }
+
+
+
+
+class panda
+       begin
+           include{
+                oso, asiatico
+           }
+           {
+               function ejemplo(){
+		           array string myArray =: {"alfa","beta"}
+                   const string z =: "esto es un strin"+'g'+' '+"de prueba";
+                   var char letra =: 'x';
+                   letra =: 'Y';
+               }
+               function lambda() typeOf float {
+                   var int b;
+                   new animal("perro");
+                   --perro
+                   ++perro
+		           read perro;
+		           print "El animal es un perro";
+
+		           if ("true") do{
+		               new animal("gato");
+		           }
+		           else{
+		               new animal("tigre");
+		           }
+		           --gato
+               }
+               function kappa() typeOf char{
+                   do {
+                       ++tigre
+                       read tigre;
+                   }
+                   while("gato")
+
+               }
+               function gama(){
+                  for (var char letra =: 'x'; in range 5) do {
+                       ++tigre
+                       print "ejemplo de for each"
+                  }
+               }
+
+           }
+       end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class panda
+              begin
+                  include{
+                       oso, asiatico
+                  }
+                  {
+                      function ejemplo(){
+                          try{
+                            array string myArray =: {"alfa","beta"}
+                            const string z =: "esto es un strin"+'g'+' '+"de prueba";
+                            var char letra =: 'x';
+                            letra =: 'Y';
+                          }
+                          catch(boolean flag)
+                          continue
+
+                      }
+                      function lambda() typeOf float {
+                          var int b;
+                          new animal("perro");
+                          --perro
+                          ++perro
+       		           read perro;
+       		           print "El animal es un perro";
+       		           return "mamifero";
+                      }
+                      function gama(){
+                         for (var char letra =: 'x'; in range 5) do {
+                              ++tigre
+                              print "ejemplo de for each";
+
+
+                         }
+			 incremento++
+                      }
+
+                  }
+              end

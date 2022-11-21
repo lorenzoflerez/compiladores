@@ -1,6 +1,7 @@
 package co.edu.uniquindio.compiladores.sintactico.datos
 
 import co.edu.uniquindio.compiladores.lexico.Token
+import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import co.edu.uniquindio.compiladores.sintactico.expresion.Expresion
 import javafx.scene.control.TreeItem
 
@@ -17,5 +18,10 @@ class Variable( var tipoDato: Token, var identificador: Token, var expresion: Ex
             raiz.children.add( expresion!!.getArbolVisual() )
         }
         return raiz
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<String>, ambito: String) {
+
+        super.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
     }
 }

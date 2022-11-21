@@ -1,23 +1,23 @@
 package co.edu.uniquindio.compiladores.sintactico.sentencia
 
 import co.edu.uniquindio.compiladores.lexico.Token
-import co.edu.uniquindio.compiladores.sintactico.estructura.Parametro
+import co.edu.uniquindio.compiladores.sintactico.estructura.Argumento
 import javafx.scene.control.TreeItem
 
-class Invocacion( var identificadorFuncion: Token, var parametros: ArrayList<Parametro>?) : Sentencia() {
+class Invocacion(var identificadorFuncion: Token, var argumentos: ArrayList<Argumento>) : Sentencia() {
 
     override fun toString(): String {
-        return "Invocacion(identificadorFuncion=$identificadorFuncion, parametros=$parametros)"
+        return "Invocacion(identificadorFuncion=$identificadorFuncion, argumentos=$argumentos)"
     }
 
     override fun getArbolVisual(): TreeItem<String> {
         val raiz =  TreeItem("Invocación Función")
         raiz.children.add( TreeItem("función : ${identificadorFuncion.lexema}" ))
-        if ( parametros!!.isNotEmpty()) {
-            val params = TreeItem("Parámetros")
-            raiz.children.add(params)
-            for (parametro in parametros!!) {
-                params.children.add(parametro.getArbolVisual())
+        if ( argumentos!!.isNotEmpty()) {
+            val args = TreeItem("Argumentos")
+            raiz.children.add(args)
+            for (argumento in argumentos!!) {
+                args.children.add(argumento.getArbolVisual())
             }
         }
         return raiz

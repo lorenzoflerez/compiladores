@@ -1,6 +1,7 @@
 package co.edu.uniquindio.compiladores.sintactico.estructura
 
 import co.edu.uniquindio.compiladores.lexico.Token
+import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
 
 /**
@@ -16,13 +17,14 @@ class UnidadDeCompilacion( var identificador: Token, var listaImports: ArrayList
         val raiz = TreeItem("Unidad de compilación")
         raiz.children.add( TreeItem("clase : ${identificador.lexema}") )
 
-        if (listaImports!!.isNotEmpty()) {
+        if (!listaImports.isNullOrEmpty()) {
             val imports = TreeItem("Imports")
             raiz.children.add(imports)
             for (import in listaImports!!) {
                 imports.children.add(import.getArbolVisual())
             }
         }
+
         if (bloqueFunciones.isNotEmpty()) {
             val funciones = TreeItem("Funciones")
             raiz.children.add(funciones)
@@ -32,5 +34,18 @@ class UnidadDeCompilacion( var identificador: Token, var listaImports: ArrayList
         }
 
         return raiz
+    }
+
+    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<String>) {
+        for (f in bloqueFunciones) {
+            f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, "Unidad de compilación")
+        }
+    }
+
+    fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos:
+    ArrayList<String>) {
+        for (f in bloqueFunciones) {
+            //f.analizarSemantica(tablaSimbolos, erroresSemanticos)
+        }
     }
 }

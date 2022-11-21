@@ -40,7 +40,9 @@
 
 <Impresion> ::= print <Expresion>
 
-<InvocacionFuncion> ::= new identificador ([<ListaParametros>]); 
+<InvocacionFuncion> ::= new identificador ([<ListaArgumentos>]); 
+
+<ListaArgumentos> ::= <Valor> [, <ListaArgumentos>]
 
 <Incremento> ::= operadorIncremento identificador
 
@@ -70,17 +72,21 @@
 
 <Expresion> ::= <ExpresionCadena> | <ExpresionLogica> | <ExpresionRelacional> | <ExpresionAritmetica>
 
-<ExpresionCadena> ::= cadena [+ <ExpresionCadena>] | identificador
+<ExpresionCadena> ::= cadena [+ <ExpresionCadena>] | <ValorTexto>
 
-<ExpresionLogica> ::= [ operadorNegacion ] [(] <ExpresionLogica> [)] | <ExpresionLogica> operadorAND <ExpresionLogica> | <ExpresionLogica> operadorOR <ExpresionLogica> | <ExpresionRelacional> | true | false
+<ExpresionLogica> ::= [ operadorNegacion ] [(] <ExpresionLogica> [)] | <ExpresionLogica> operadorAND <ExpresionLogica> | <ExpresionLogica> operadorOR <ExpresionLogica> | <ValorLogico> | <ExpresionRelacional>
 
-<ExpresionRelacional> ::= <ExpresionCadena> | <ExpresionAritmetica> | <ExpresionRelacional> operadorRelacional <ExpresionRelacional>
+<ExpresionRelacional> ::= <ExpresionAritmetica> operadorRelacional <ExpresionAritmetica> | <ExpresionCadena> operadorRelacional <ExpresionCadena> | (<ExpresionRelacional>)
 
-<ExpresionAritmetica> ::= <ExpresionAritmetica> operardorAritmetico <ExpresionAritmetica> | (<ExpresionAritmetica>) |<ValorNumerico> 
+<ExpresionAritmetica> ::= <ExpresionAritmetica> operardorAritmetico <ExpresionAritmetica> | (<ExpresionAritmetica>) | <ValorNumerico> 
 
-<Valor> ::= <ValorNumerico> | caracter | cadenaCaracteres
+<Valor> ::= <ValorNumerico> | <ValorTexto> | <ValorLogico> 
 
 <ValorNumerico> ::= [<Signo>] decimal | [<Signo>] entero | [<Signo>] identificador
+
+<ValorTexto> ::= caracter | cadenaCaracteres 
+
+<ValorLogico> ::=  true | false 
 
 <Signo> ::= - | +
 

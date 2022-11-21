@@ -6,7 +6,7 @@ import javafx.scene.control.TreeItem
 class Parametro( var tipoDato: Token, var parametro: Token ) {
 
     override fun toString(): String {
-        return "Parametro(parametro=$tipoDato, tipoDato=$parametro)"
+        return "Parametro(tipoDato=$tipoDato, parametro=$parametro)"
     }
 
     fun getArbolVisual(): TreeItem<String> {

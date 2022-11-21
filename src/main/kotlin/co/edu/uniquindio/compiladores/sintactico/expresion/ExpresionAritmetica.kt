@@ -6,8 +6,6 @@ import javafx.scene.control.TreeItem
 
 class ExpresionAritmetica(): Expresion() {
 
-
-
     var expresionIzquierda: ExpresionAritmetica? = null
     var expresionDerecha: ExpresionAritmetica? = null
     var operador: Token? = null
