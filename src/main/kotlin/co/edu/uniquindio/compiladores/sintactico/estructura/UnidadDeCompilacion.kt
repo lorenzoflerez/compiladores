@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.sintactico.estructura
 
+import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.lexico.Token
 import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
@@ -36,14 +37,13 @@ class UnidadDeCompilacion( var identificador: Token, var listaImports: ArrayList
         return raiz
     }
 
-    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<String>) {
+    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>) {
         for (f in bloqueFunciones) {
             f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, "Unidad de compilación")
         }
     }
 
-    fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos:
-    ArrayList<String>) {
+    fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>) {
         for (f in bloqueFunciones) {
             //f.analizarSemantica(tablaSimbolos, erroresSemanticos)
         }

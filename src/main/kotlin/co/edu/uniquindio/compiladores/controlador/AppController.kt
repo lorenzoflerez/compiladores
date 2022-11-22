@@ -1,9 +1,9 @@
 package co.edu.uniquindio.compiladores.controlador
 
 import co.edu.uniquindio.compiladores.lexico.AnalizadorLexico
-import co.edu.uniquindio.compiladores.lexico.Categoria
 import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.lexico.Token
+import co.edu.uniquindio.compiladores.semantico.AnalizadorSemantico
 import co.edu.uniquindio.compiladores.sintactico.AnalizadorSintactico
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
@@ -31,6 +31,19 @@ class AppController : Initializable{
     @FXML lateinit var filaErrorLexico: TableColumn<Error, Int>
     @FXML lateinit var columnaErrorLexico: TableColumn<Error, Int>
 
+    @FXML lateinit var tablaErroresSintacticos:TableView<Error>
+
+    @FXML lateinit var mensajeErrorSintactico: TableColumn<Error, String>
+    @FXML lateinit var filaErrorSintactico: TableColumn<Error, Int>
+    @FXML lateinit var columnaErrorSintactico: TableColumn<Error, Int>
+
+    @FXML lateinit var tablaErroresSemanticos:TableView<Error>
+
+    @FXML lateinit var mensajeErrorSemantico: TableColumn<Error, String>
+    @FXML lateinit var filaErrorSemantico: TableColumn<Error, Int>
+    @FXML lateinit var columnaErrorSemantico: TableColumn<Error, Int>
+
+
     @FXML lateinit var arbolVisual:TreeView<String>
 
     @FXML
@@ -46,8 +59,19 @@ class AppController : Initializable{
                 val sintaxis = AnalizadorSintactico(lexico.listaTokens)
                 val unidad = sintaxis.esUnidadDeCompilacion()
 
+                tablaErroresSintacticos.items.clear()
+                println(sintaxis.listaErrores)
+                tablaErroresSintacticos.items = FXCollections.observableArrayList(sintaxis.listaErrores)
+
                 if(unidad != null){
+                    tablaErroresSemanticos.items.clear()
                     arbolVisual.root = unidad.getArbolVisual()
+                    val semantica = AnalizadorSemantico(unidad)
+                    semantica.llenarTablaSimbolos()
+                    println(semantica.tablaSimbolos)
+                    semantica.analizarSemantica()
+                    println(semantica.erroresSemanticos)
+                    tablaErroresSemanticos.items = FXCollections.observableArrayList(semantica.erroresSemanticos)
                 }
             }
             else{
@@ -68,5 +92,13 @@ class AppController : Initializable{
         mensajeErrorLexico.cellValueFactory = PropertyValueFactory("error")
         filaErrorLexico.cellValueFactory = PropertyValueFactory("fila")
         columnaErrorLexico.cellValueFactory = PropertyValueFactory("columna")
+
+        mensajeErrorSintactico.cellValueFactory = PropertyValueFactory("error")
+        filaErrorSintactico.cellValueFactory = PropertyValueFactory("fila")
+        columnaErrorSintactico.cellValueFactory = PropertyValueFactory("columna")
+
+        mensajeErrorSemantico.cellValueFactory = PropertyValueFactory("error")
+        filaErrorSemantico.cellValueFactory = PropertyValueFactory("fila")
+        columnaErrorSemantico.cellValueFactory = PropertyValueFactory("columna")
     }
 }

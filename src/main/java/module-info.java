@@ -10,5 +10,7 @@ module co.edu.uniquindio.compiladores.app {
 
     opens co.edu.uniquindio.compiladores.controlador to javafx.fxml;
     opens co.edu.uniquindio.compiladores.lexico to javafx.base;
+    opens co.edu.uniquindio.compiladores.sintactico to javafx.base;
+    opens co.edu.uniquindio.compiladores.semantico to javafx.base;
     exports co.edu.uniquindio.compiladores.app;
 }

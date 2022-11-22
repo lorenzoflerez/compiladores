@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.sintactico.control
 
+import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import co.edu.uniquindio.compiladores.sintactico.datos.Valor
 import co.edu.uniquindio.compiladores.sintactico.datos.ValorNumerico
@@ -24,11 +25,17 @@ class CicloFor(var indice: Variable, var limite: ValorNumerico, var bloqueSenten
         return "CicloFor(indice=$indice, limite=$limite, bloqueSentencias=$bloqueSentencias)"
     }
 
-    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<String>, ambito: String) {
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
+        indice.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
         for (sentencia in bloqueSentencias){
             sentencia.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
         }
+    }
 
-        //super.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
+        indice.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+        for (sentencia in bloqueSentencias){
+            sentencia.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+        }
     }
 }

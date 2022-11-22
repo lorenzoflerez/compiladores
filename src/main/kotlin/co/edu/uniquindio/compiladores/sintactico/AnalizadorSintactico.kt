@@ -118,7 +118,6 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                 import = esImport()
             }
             else{
-                reportarError("Falta separador de librerías")
                 break
             }
         }
@@ -167,6 +166,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
         var funcion= esFuncion()
         while (funcion!=null){
             listaFunciones.add(funcion)
+            obtenerSiguienteToken()
             funcion = esFuncion()
         }
         return listaFunciones
@@ -228,7 +228,6 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                 parametro = esParametro()
             }
             else{
-                reportarError("Falta separador de parámetros")
                 break
             }
         }
@@ -262,7 +261,6 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             val listaSentencias = esListaSentencias()
             if (tokenActual.categoria == Categoria.LLAVE_DERECHA) {
-                obtenerSiguienteToken()
                 return listaSentencias
             } else {
                 reportarError("Falta llave derecha")
@@ -413,7 +411,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                         }
                     }
                     else{
-                        reportarError("Falta operador de asignación")
+                        reportarError("Falta operador de asignación de constante")
                     }
                 }
                 else{
@@ -536,19 +534,28 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
     }
 
     /**
-     * <Asignacion> ::= identificador operadorAsignacion <Expresion>
+     * <Asignacion> ::= identificador operadorAsignacion <Expresion> | identificador operadorAsignacion <InvocacionFuncion>
      */
     fun esAsignacion(): Asingnacion? {
         if ( tokenActual.categoria == Categoria.IDENTIFICADOR ){
             val identificadorAsingnacion = tokenActual
+
             obtenerSiguienteToken()
+
             if(tokenActual.categoria == Categoria.OPERADOR_ASIGNACION){
+                val operador = tokenActual
                 obtenerSiguienteToken()
+                checkpoint()
                 val expresion:Expresion? = esExpresion()
                 if(expresion!=null){
-                    return Asingnacion(identificadorAsingnacion, expresion)
+                    return Asingnacion(identificadorAsingnacion,operador, expresion)
                 }
                 else{
+                    backTracking()
+                    val invocacion:Invocacion? = esInvocacionFuncion()
+                    if(invocacion!=null){
+                        return Asingnacion(identificadorAsingnacion,operador, invocacion)
+                    }
                     reportarError("Falta expresión de asignación")
                 }
             }
@@ -625,13 +632,14 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                         if(leerPalabraReservada("do")){
                             obtenerSiguienteToken()
                             val bloqueCondicional = esBloqueSentencias()
+                            obtenerSiguienteToken()
                             if (bloqueCondicional!=null){
                                 var bloqueAlternativo : ArrayList<Sentencia>? = null
                                 if( leerPalabraReservada("else")) {
                                     obtenerSiguienteToken()
                                     bloqueAlternativo = esBloqueSentencias()
                                     if (bloqueAlternativo != null) {
-                                        obtenerSiguienteToken()
+                                        return Condicional(expresion,bloqueCondicional,bloqueAlternativo)
                                     }
                                     else{
                                         reportarError("Falta bloque de sentencias else")
@@ -652,7 +660,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                     }
                 }
                 else{
-                    reportarError("Expresión lógica no valida")
+                    reportarError("Expresión lógica if no valida")
                 }
             }
             else{
@@ -821,6 +829,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             val bloqueSentencias: ArrayList<Sentencia> ? = esBloqueSentencias()
             if (bloqueSentencias != null) {
+                obtenerSiguienteToken()
                 if(leerPalabraReservada("catch")){
                     obtenerSiguienteToken()
                     if (tokenActual.categoria == Categoria.PARENTESIS_IZQUIERDO) {
@@ -944,7 +953,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                     }
                 }
                 else{
-                    reportarError("Expresión lógica no valida")
+                    reportarError("Expresión lógica for no valida")
                 }
             }
             else{
@@ -985,7 +994,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                     }
                 }
                 else{
-                    reportarError("Expresión lógica no valida")
+                    reportarError("Expresión lógica while no valida")
                 }
             }
             else{
@@ -1003,6 +1012,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             val bloqueSentencias = esBloqueSentencias()
             if (bloqueSentencias!=null){
+                obtenerSiguienteToken()
                 if(leerPalabraReservada("while")) {
                     obtenerSiguienteToken()
                     if (tokenActual.categoria == Categoria.PARENTESIS_IZQUIERDO) {
@@ -1017,7 +1027,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
                             }
                         }
                         else{
-                            reportarError("Expresión lógica no valida")
+                            reportarError("Expresión lógica do while no valida")
                         }
                     }
                     else{
@@ -1044,11 +1054,10 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
             obtenerSiguienteToken()
             return ExpresionAritmetica(valor)
         }
-        //var expresion: Expresion? = esExpresionLogica()
-        //if(expresion!=null)
-        //    return expresion
-        //expresion = esExpresionRelacional()
-        var expresion: Expresion? = esExpresionRelacional()
+        var expresion: Expresion? = esExpresionLogica()
+        if(expresion!=null)
+            return expresion
+        expresion = esExpresionRelacional()
         if(expresion!=null)
             return expresion
         expresion = esExpresionAritmetica()
@@ -1260,13 +1269,10 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
     fun esValorLogico(): ValorLogico? {
         val expresion = esExpresionRelacional()
         if(expresion!=null){
-            obtenerSiguienteToken()
             return ValorLogico(expresion)
         }
         if(leerPalabraReservada("true")||leerPalabraReservada("false")){
-            var valor: Token?  = null
-            valor = tokenActual
-            obtenerSiguienteToken()
+            val valor: Token?  = tokenActual
             return ValorLogico(valor)
         }
         return null
@@ -1276,7 +1282,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
      * <ValorTexto> ::= caracter | cadenaCaracteres
      */
     fun esValorTexto(): ValorTexto? {
-        if(tokenActual.categoria == Categoria.CARACTER || tokenActual.categoria == Categoria.CADENA_CARACTERES){
+        if(tokenActual.categoria == Categoria.CARACTER || tokenActual.categoria == Categoria.CADENA_CARACTERES || tokenActual.categoria == Categoria.IDENTIFICADOR){
             val valor = tokenActual
             return ValorTexto(valor)
         }

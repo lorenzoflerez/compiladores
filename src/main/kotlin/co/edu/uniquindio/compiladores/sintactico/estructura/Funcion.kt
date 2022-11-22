@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.sintactico.estructura
 
+import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.lexico.Token
 import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import co.edu.uniquindio.compiladores.sintactico.sentencia.Sentencia
@@ -46,7 +47,6 @@ class Funcion( var identificador :Token, var parametros: ArrayList<Parametro>?, 
 
     private fun obtenerTiposParametros(): ArrayList<String> {
         val tipoParametros = ArrayList<String>()
-
         if (!parametros.isNullOrEmpty()) {
             for (parametro in parametros!!) {
                 tipoParametros.add(parametro.tipoDato.lexema)
@@ -55,17 +55,15 @@ class Funcion( var identificador :Token, var parametros: ArrayList<Parametro>?, 
         return tipoParametros
     }
 
-    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<String>, ambito:String) {
+    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito:String) {
         if (tipoRetorno != null) {
-            tablaSimbolos.guardarSimboloFuncion(identificador.lexema, tipoRetorno!!.lexema, obtenerTiposParametros())
+            tablaSimbolos.guardarSimboloFuncion(identificador.lexema, tipoRetorno!!.lexema, obtenerTiposParametros(),ambito,identificador.fila,identificador.columna)
         } else {
-            tablaSimbolos.guardarSimboloFuncion(identificador.lexema, null, obtenerTiposParametros())
+            tablaSimbolos.guardarSimboloFuncion(identificador.lexema, null, obtenerTiposParametros(),ambito,identificador.fila,identificador.columna)
         }
         if (!parametros.isNullOrEmpty()) {
             for (parametro in parametros!!) {
-                tablaSimbolos.guardarSimboloVariable(parametro.parametro.lexema,
-                    parametro.tipoDato.lexema, identificador.lexema,
-                    parametro.parametro.fila, parametro.parametro.columna)
+                tablaSimbolos.guardarSimboloVariable(parametro.parametro.lexema,parametro.tipoDato.lexema, true,identificador.lexema, parametro.parametro.fila, parametro.parametro.columna)
             }
         }
         if(bloqueSentencias.isNullOrEmpty()){

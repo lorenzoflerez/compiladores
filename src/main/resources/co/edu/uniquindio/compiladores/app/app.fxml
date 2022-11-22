@@ -47,12 +47,30 @@
                 </Tab>
                 <Tab text="Errores Sintácticos">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
+                            <children>
+                                <TableView fx:id="tablaErroresSintacticos" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="2.0">
+                                    <columns>
+                                        <TableColumn fx:id="mensajeErrorSintactico" maxWidth="450.0" minWidth="450.0" prefWidth="450.0" text="Mensaje" />
+                                        <TableColumn fx:id="filaErrorSintactico" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Fila" />
+                                        <TableColumn fx:id="columnaErrorSintactico" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Columna" />
+                                    </columns>
+                                </TableView>
+                            </children></AnchorPane>
                     </content>
                 </Tab>
                 <Tab text="Errores Semánticos">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView fx:id="tablaErroresSemanticos" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="2.0">
+                                    <columns>
+                                        <TableColumn fx:id="mensajeErrorSemantico" maxWidth="450.0" minWidth="450.0" prefWidth="450.0" text="Mensaje" />
+                                        <TableColumn fx:id="filaErrorSemantico" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Fila" />
+                                        <TableColumn fx:id="columnaErrorSemantico" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Columna" />
+                                    </columns>
+                                </TableView>
+                            </children></AnchorPane>
                     </content>
                 </Tab>
             </tabs>
