@@ -11,7 +11,13 @@ class ExpresionCadena( var cadenas: ArrayList<ValorTexto>): Expresion() {
 
     override fun getArbolVisual(): TreeItem<String> {
         val raiz =  TreeItem("Expresión Cadena")
-        var texto:String = ""
+        val text =  getTexto()
+        raiz.children.add(TreeItem(text))
+        return raiz
+    }
+
+    override fun getTexto(): String {
+        var texto: String=""
 
         for(valor in cadenas){
             texto += valor.valor.lexema
@@ -19,7 +25,6 @@ class ExpresionCadena( var cadenas: ArrayList<ValorTexto>): Expresion() {
         }
         val text = texto.substring(0,texto.length - 1)
 
-        raiz.children.add(TreeItem(text))
-        return raiz
+        return text;
     }
 }

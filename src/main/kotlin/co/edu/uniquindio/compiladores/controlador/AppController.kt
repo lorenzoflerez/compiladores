@@ -45,7 +45,6 @@ class AppController : Initializable{
             if( lexico.listaErrores.isEmpty()){
                 val sintaxis = AnalizadorSintactico(lexico.listaTokens)
                 val unidad = sintaxis.esUnidadDeCompilacion()
-                println(unidad)
 
                 if(unidad != null){
                     arbolVisual.root = unidad.getArbolVisual()

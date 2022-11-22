@@ -170,6 +170,7 @@ class panda
                    const string z =: "esto es un strin"+'g'+' '+"de prueba";
                    var char letra =: 'x';
                    letra =: 'Y';
+                   var int numero =: 56;
                }
                function lambda() typeOf float {
                    var int b;
@@ -215,9 +216,6 @@ class panda
 
 
 
-
-
-
 class panda
               begin
                   include{
@@ -230,6 +228,7 @@ class panda
                             const string z =: "esto es un strin"+'g'+' '+"de prueba";
                             var char letra =: 'x';
                             letra =: 'Y';
+                            var int numero =: 56+19;
                           }
                           catch(boolean flag)
                           continue
@@ -256,3 +255,40 @@ class panda
 
                   }
               end
+
+
+
+
+
+
+
+
+
+class promedio
+    begin
+    {
+        function sumar() typeOf float{
+            array string myArray =: {"alfa","beta"}
+            var int promedio =: "variable";
+            for (var char letra =: 'x'; in range 5) do {
+                ++tigre
+                print "ejemplo de for each";
+            }
+        }
+    }
+    end
+
+
+    class promediar
+        begin
+        {
+           function calcular(){
+                array int myArray =: {4,9,12,3,14+63}
+                var int promedio =: 0;
+                for (var int numero =: 0; in range 5) do {
+                    promedio =+ numero;
+                }
+    	        ++incremento
+           }
+        }
+        end

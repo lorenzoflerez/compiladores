@@ -237,39 +237,46 @@ class AnalizadorLexico(private var codigoFuente:String) {
         val operadorNumerico = "+-*/%"
         // + | - | * | / | %
         if (operadorNumerico.contains(caracterActual)){
+
             actualizarVariables()
             //Transición Inicial
             lexema += caracterActual
-            if(caracterActual == '+' || caracterActual == '-') {
-                val operador = caracterActual
+            if(caracterActual == '+') {
+
                 obtenerSiguienteCaracter()
-                // + | -
-                if(operador != caracterActual)
+                // +
+                if(caracterActual != '+')
                     //Aceptación y Almacenamiento AA operador aritmético
                     almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
                 else{
                     lexema += caracterActual
+                    //Aceptación y Almacenamiento AA operador decremental
+                    almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
                     obtenerSiguienteCaracter()
-                    // --
-                    if(caracterActual=='-'){
-                        println("dec" +lexema)
-                        //Aceptación y Almacenamiento AA operador decremental
-                        almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
-                    }
-                    // ++
-                    else{
-                        println("incre"+lexema)
-                        //Aceptación y Almacenamiento AA operador incremental
-                        almacenarToken(lexema, Categoria.OPERADOR_INCREMENTO, filaInicial, columnaInicial)
-                    }
                 }
                 return true
             }
             else{
-                //Aceptación y Almacenamiento AA operador aritmético * | / | %
-                almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
-                obtenerSiguienteCaracter()
-                return true
+                if(caracterActual == '-'){
+                    obtenerSiguienteCaracter()
+                    // -
+                    if(caracterActual != '-')
+                    //Aceptación y Almacenamiento AA operador aritmético
+                        almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+                    else{
+                        // --
+                        lexema += caracterActual
+                        //Aceptación y Almacenamiento AA operador decremental
+                        almacenarToken(lexema, Categoria.OPERADOR_DECREMENTO, filaInicial, columnaInicial)
+                        obtenerSiguienteCaracter()
+                    }
+                    return true
+                }
+                else{
+                    //Aceptación y Almacenamiento AA operador aritmético * | / | %
+                    almacenarToken(lexema, Categoria.OPERADOR_ARITMETICO, filaInicial, columnaInicial)
+                    obtenerSiguienteCaracter()
+                }
             }
         }
         //Rechazo inmediato RI
