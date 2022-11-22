@@ -1,6 +1,5 @@
 package co.edu.uniquindio.compiladores.sintactico.expresion
 
-import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.lexico.Token
 import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import co.edu.uniquindio.compiladores.sintactico.datos.ValorLogico
@@ -60,7 +59,7 @@ class ExpresionLogica(
             if (expresionDerecha != null) {
                 return "${valorLogico!!.valorLogico!!.lexema} ${operador!!.lexema} ${expresionDerecha!!.valorLogico!!.valorLogico!!.lexema}"
             }
-            return "${valorLogico!!.valorLogico!!.lexema}"
+            return valorLogico!!.valorLogico!!.lexema
         }
         else{
             return ""

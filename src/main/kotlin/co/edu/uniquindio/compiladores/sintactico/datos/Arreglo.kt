@@ -33,7 +33,10 @@ class Arreglo(var identificador:Token, var tipoDato: Token, var listaArgumentos:
         for(arg in listaArgumentos){
             arg.expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
             val tipo = arg.expresion.obtenerTipo(tablaSimbolos, ambito)
-            if(tipo != tipoDato.lexema){
+            if(tipo.isEmpty()){
+                erroresSemanticos.add(Error("El campo de dato del argumento (${tipo}) no coincide con el del arreglo", identificador.fila, identificador.columna))
+            }
+            else if(tipo != tipoDato.lexema){
                 erroresSemanticos.add(Error("El tipo de dato del argumento (${tipo}) no coincide con el del arreglo", identificador.fila, identificador.columna))
             }
         }

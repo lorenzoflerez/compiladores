@@ -73,6 +73,12 @@ class Funcion( var identificador :Token, var parametros: ArrayList<Parametro>?, 
         }
     }
 
+    fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>) {
+        for (s in bloqueSentencias) {
+            s.analizarSemantica(tablaSimbolos, erroresSemanticos, identificador.lexema)
+        }
+    }
+
 
 
 

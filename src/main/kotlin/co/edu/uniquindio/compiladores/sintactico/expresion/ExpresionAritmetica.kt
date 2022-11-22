@@ -8,10 +8,10 @@ import co.edu.uniquindio.compiladores.sintactico.datos.ValorNumerico
 import javafx.scene.control.TreeItem
 
 class ExpresionAritmetica(
-    var expresionIzquierda: ExpresionAritmetica? ,
-    var expresionDerecha: ExpresionAritmetica? ,
-    var operador: Token? ,
-    var valorNumerico: ValorNumerico?
+     var expresionIzquierda: ExpresionAritmetica?,
+     var expresionDerecha: ExpresionAritmetica?,
+     var operador: Token?,
+     var valorNumerico: ValorNumerico?
 ): Expresion() {
 
     constructor( expresionIzquierda:ExpresionAritmetica?, operador:Token?, expresionDerecha: ExpresionAritmetica? ) : this(expresionIzquierda,expresionDerecha,operador,null) {
@@ -83,61 +83,35 @@ class ExpresionAritmetica(
                 "int"
             }
         }
-
-        if (valorNumerico != null) {
-            if (expresionDerecha != null) {
-
-            }
+        else if(expresionIzquierda != null){
+            return expresionIzquierda!!.obtenerTipo(tablaSimbolos, ambito)
+        }
+        else if(valorNumerico != null && expresionDerecha != null){
+            val tipoIzquierda = obtenerCampo(valorNumerico, ambito,tablaSimbolos )
+            val tipoDerecha = expresionDerecha!!.obtenerTipo(tablaSimbolos,ambito)
+            return if(tipoIzquierda=="float"||tipoDerecha=="float")
+                "float"
             else{
-                if(valorNumerico!!.numero.categoria==Categoria.ENTERO){
-                    return "int"
-                }
-                else if(valorNumerico!!.numero.categoria==Categoria.DECIMAL){
-                    return "float"
-                }
-                else{
-                    val simbolo = tablaSimbolos.buscarSimboloVariable(valorNumerico!!.numero.lexema,ambito)
-                    if(simbolo!=null){
-                        return simbolo.tipo
-                    }
-                    else{
-                        //erroresSemanticos.add(Error("El campo ${valorNumerico!!.numero.lexema} no existe dentro del ámbito $ambito",valorNumerico!!.numero.fila, valorNumerico!!.numero.columna))
-                    }
-                }
+                "int"
             }
         }
-        else{
-            if (expresionDerecha != null) {
-                val tipoIzquierda = expresionIzquierda!!.obtenerTipo(tablaSimbolos,ambito)
-                val tipoDerecha = expresionDerecha!!.obtenerTipo(tablaSimbolos,ambito)
-                return if(tipoIzquierda=="float"||tipoDerecha=="float")
-                    "float"
-                else{
-                    "int"
-                }
-
-            }
-            else{
-
-            }
+        else if (valorNumerico != null) {
+            return obtenerCampo(valorNumerico, ambito,tablaSimbolos )
         }
         return ""
     }
 
-    private fun obtenerCampo(valorNumerico: ValorNumerico?, ambito: String, tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>):String{
+    private fun obtenerCampo(valorNumerico: ValorNumerico?, ambito: String, tablaSimbolos: TablaSimbolos):String{
         if(valorNumerico!!.numero.categoria==Categoria.ENTERO){
             return "int"
         }
-        else if(valorNumerico!!.numero.categoria==Categoria.DECIMAL){
+        else if(valorNumerico.numero.categoria==Categoria.DECIMAL){
             return "float"
         }
         else{
-            val simbolo = tablaSimbolos.buscarSimboloVariable(valorNumerico!!.numero.lexema,ambito)
+            val simbolo = tablaSimbolos.buscarSimboloVariable(valorNumerico.numero.lexema,ambito)
             if(simbolo!=null){
                 return simbolo.tipo
-            }
-            else{
-                erroresSemanticos.add(Error("El campo ${valorNumerico!!.numero.lexema} no existe dentro del ámbito $ambito",valorNumerico!!.numero.fila, valorNumerico!!.numero.columna))
             }
         }
         return ""
@@ -147,10 +121,11 @@ class ExpresionAritmetica(
         if(valorNumerico!=null){
             if(valorNumerico!!.numero.categoria == Categoria.IDENTIFICADOR){
                 val simbolo  = tablaSimbolos.buscarSimboloVariable(valorNumerico!!.numero.lexema,ambito)
-                //if(simbolo.tipo == )
-
                 if(simbolo == null){
                     erroresSemanticos.add(Error("El campo ${valorNumerico!!.numero.lexema} no existe dentro del ámbito $ambito",valorNumerico!!.numero.fila,valorNumerico!!.numero.columna))
+                }
+                else if(simbolo.tipo != "int" && simbolo.tipo!="float" ){
+                    erroresSemanticos.add(Error("El campo ${valorNumerico!!.numero.lexema} (${simbolo.tipo})no es de tipo numérico",valorNumerico!!.numero.fila,valorNumerico!!.numero.columna))
                 }
             }
         }

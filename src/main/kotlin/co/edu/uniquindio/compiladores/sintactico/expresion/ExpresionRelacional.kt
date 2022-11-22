@@ -23,6 +23,7 @@ class ExpresionRelacional(var expresionIzquierda: Expresion, var operador: Token
     }
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
-       //if()
+        expresionIzquierda.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+        expresionDerecha.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
     }
 }

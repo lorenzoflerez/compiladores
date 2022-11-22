@@ -20,15 +20,13 @@ class ExpresionCadena( var cadenas: ArrayList<ValorTexto>): Expresion() {
     }
 
     override fun getTexto(): String {
-        var texto: String=""
+        var texto = ""
 
-        for(valor in cadenas){
+        for (valor in cadenas) {
             texto += valor.valor.lexema
             texto += "+"
         }
-        val text = texto.substring(0,texto.length - 1)
-
-        return text;
+        return texto.substring(0, texto.length - 1)
     }
 
     override fun obtenerTipo(tablaSimbolos: TablaSimbolos, ambito: String):String {
@@ -36,15 +34,18 @@ class ExpresionCadena( var cadenas: ArrayList<ValorTexto>): Expresion() {
     }
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
-        for(valor in cadenas){
-            if(valor.valor.categoria==Categoria.IDENTIFICADOR){
-                /*val simbolo = tablaSimbolos.buscarSimboloVariable(valor.valor.lexema,ambito)
-                if(simbolo!=null){
-                    if(simbol)
+        for(valor in cadenas) {
+            if (valor.valor.categoria == Categoria.IDENTIFICADOR) {
+                val simbolo = tablaSimbolos.buscarSimboloVariable(valor.valor.lexema, ambito)
+                if (simbolo == null) {
+                    erroresSemanticos.add(
+                        Error(
+                            "El campo ${valor.valor.lexema} no existe dentro del ámbito $ambito",
+                            valor.valor.fila,
+                            valor.valor.columna
+                        )
+                    )
                 }
-                else{
-                    erroresSemanticos.add(Error("El campo ${valor.valor.lexema} no existe dentro del ámbito $ambito",valor.valor.fila, valor.valor.columna))
-                }*/
             }
         }
     }

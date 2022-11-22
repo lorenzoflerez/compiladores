@@ -21,7 +21,22 @@ class Retorno( var expresion: Expresion ): Sentencia() {
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
         expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
         val tipoExpresion= expresion.obtenerTipo(tablaSimbolos, ambito)
-        //comparar tipo de retorno con tipo de funcion
-        //val tipoFuncion = tablaSimbolos.buscarSimboloFuncion()
+        val simboloFuncion = tablaSimbolos.buscarSimboloFuncion(ambito, expresion.obtenerTipo(tablaSimbolos, ambito))
+        if(simboloFuncion!=null) {
+            val tipoFuncion = simboloFuncion.tipo
+            if (tipoFuncion == null) {
+                erroresSemanticos.add(Error("Retorno incorrecto en $ambito. Las funciones void no retornan", -1, -1))
+            } else if (tipoExpresion == null) {
+                erroresSemanticos.add(Error("Retorno incorrecto en $ambito. Las expresión no retorna un tipo valido", -1, -1))
+            } else if (tipoFuncion != tipoExpresion) {
+                erroresSemanticos.add(
+                    Error(
+                        "Los tipos de dato no coinciden. Se esperaba un $tipoFuncion pero se encontro un $tipoExpresion en $ambito",
+                        -1,
+                        -1
+                    )
+                )
+            }
+        }
     }
 }

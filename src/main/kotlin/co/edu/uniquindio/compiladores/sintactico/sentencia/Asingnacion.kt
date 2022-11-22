@@ -36,6 +36,16 @@ class Asingnacion(var identificadorAsingnacion: Token, var operador:Token) : Sen
         return raiz
     }
 
+    private fun obtenerTiposArgumentos(tablaSimbolos: TablaSimbolos, ambito: String): ArrayList<String> {
+        val tipoArgumentos = ArrayList<String>()
+
+        for (argumento in invocacion!!.argumentos) {
+            val tipoArg = argumento.obtenerTipo(tablaSimbolos, ambito)
+            tipoArgumentos.add(tipoArg)
+        }
+        return tipoArgumentos
+    }
+
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
         val simbolo = tablaSimbolos.buscarSimboloVariable(identificadorAsingnacion.lexema, ambito)
 
@@ -52,8 +62,19 @@ class Asingnacion(var identificadorAsingnacion: Token, var operador:Token) : Sen
                 }
             }
             else if(invocacion!=null){
+                val argumentos = obtenerTiposArgumentos(tablaSimbolos, ambito)
                 invocacion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
-                val tipoInvocacion = simbolo.tipo
+                val simboloInvocacion = tablaSimbolos.buscarSimboloFuncion(invocacion!!.identificadorFuncion.lexema,argumentos)
+                val simboloVariable = tablaSimbolos.buscarSimboloVariable(identificadorAsingnacion.lexema,ambito)
+                if(simboloInvocacion==null){
+                    erroresSemanticos.add(Error("El campo ${invocacion!!.identificadorFuncion.lexema} no existe dentro del ámbito $ambito",identificadorAsingnacion.fila,identificadorAsingnacion.columna))
+                }
+                else if(simboloVariable==null){
+                    erroresSemanticos.add(Error("El campo ${identificadorAsingnacion.lexema} no existe dentro del ámbito $ambito",identificadorAsingnacion.fila,identificadorAsingnacion.columna))
+                }
+                else if(simboloInvocacion != simboloVariable){
+                    erroresSemanticos.add(Error("El tipo de dato de la función (${simboloInvocacion.tipo}) no coincide con el de la variable (${identificadorAsingnacion.lexema}:$tipo)", identificadorAsingnacion.fila, identificadorAsingnacion.columna))
+                }
             }
         }
     }

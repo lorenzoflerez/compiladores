@@ -17,7 +17,13 @@ class Argumento(var expresion: Expresion){
         return "Argumento(expresion=$expresion)"
     }
 
+    fun obtenerTipo(tablaSimbolos: TablaSimbolos, ambito: String): String {
+        return expresion.obtenerTipo(tablaSimbolos, ambito)
+    }
+
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String){
         expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
     }
+
+
 }

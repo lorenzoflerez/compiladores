@@ -45,7 +45,7 @@ class UnidadDeCompilacion( var identificador: Token, var listaImports: ArrayList
 
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>) {
         for (f in bloqueFunciones) {
-            //f.analizarSemantica(tablaSimbolos, erroresSemanticos)
+            f.analizarSemantica(tablaSimbolos, erroresSemanticos)
         }
     }
 }

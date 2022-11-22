@@ -50,7 +50,7 @@ class TablaSimbolos (var listaErrores: ArrayList<Error>) {
     }
 
     /**
-     * Busca un símbolo de tipo función en la tabla de símbolos
+     * Busca un símbolo de tipo función en la tabla de símbolos por sus parametros
      */
     fun buscarSimboloFuncion(nombre: String, tiposParametros: ArrayList<String>): Simbolo? {
         for (simbolo in listaSimbolos) {
@@ -58,6 +58,18 @@ class TablaSimbolos (var listaErrores: ArrayList<Error>) {
                 if (nombre == simbolo.nombre && tiposParametros == simbolo.tipoParametros) {
                     return simbolo
                 }
+            }
+        }
+        return null
+    }
+
+    /**
+     * Busca un símbolo de tipo función en la tabla de símbolos por su tipo de retorno
+     */
+    fun buscarSimboloFuncion(nombre: String, tipo: String?): Simbolo? {
+        for (simbolo in listaSimbolos) {
+            if (nombre == simbolo.nombre && tipo == simbolo.tipo) {
+                return simbolo
             }
         }
         return null
