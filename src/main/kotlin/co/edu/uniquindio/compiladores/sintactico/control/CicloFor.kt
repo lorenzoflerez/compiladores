@@ -38,4 +38,13 @@ class CicloFor(var indice: Variable, var limite: ValorNumerico, var bloqueSenten
             sentencia.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = "for ( int" +indice.getJavaCode()+"= 0; "+indice.getJavaCode()+"<"+limite.numero+";"+ indice.getJavaCode()+"++ {"
+        for (sentencia in bloqueSentencias) {
+            codigo += sentencia.getJavaCode()
+        }
+        codigo += "}"
+        return codigo
+    }
 }

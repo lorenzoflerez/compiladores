@@ -14,4 +14,8 @@ class Decremento( var identificadorVariable: Token ): Sentencia() {
         raiz.children.add( TreeItem("variable : ${identificadorVariable.lexema} ") )
         return raiz
     }
+
+    override fun getJavaCode(): String {
+        return identificadorVariable.getJavaCode() + "--"
+    }
 }

@@ -41,4 +41,14 @@ class Arreglo(var identificador:Token, var tipoDato: Token, var listaArgumentos:
             }
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = tipoDato.getJavaCode() + "[] " +identificador.getJavaCode() + " = "
+        for(arg in listaArgumentos){
+            codigo += arg.expresion.getJavaCode()+","
+        }
+        codigo = codigo.substring(0, codigo.length - 1)
+        codigo += "};"
+        return super.getJavaCode()
+    }
 }

@@ -13,11 +13,12 @@ open class Sentencia() {
 
     }
 
-
-
     open fun getArbolVisual(): TreeItem<String> {
         return  TreeItem("Sentencia")
     }
 
+    open fun getJavaCode(): String {
+        return ""
+    }
 
 }

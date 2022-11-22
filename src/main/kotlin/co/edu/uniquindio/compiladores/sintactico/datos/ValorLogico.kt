@@ -19,4 +19,15 @@ class ValorLogico(): Valor(){
     override fun toString(): String {
         return "ValorLogico(expresion=$expresion, valorLogico=$valorLogico)"
     }
+
+    override fun getJavaCode(): String {
+        var codigo = ""
+        if(expresion!=null){
+            codigo + expresion!!.getJavaCode()
+        }
+        if(valorLogico!=null){
+            codigo + valorLogico!!.getJavaCode()
+        }
+        return codigo
+    }
 }

@@ -35,4 +35,13 @@ class CicloWhile( var expresion:ExpresionLogica, var bloqueSentencias: ArrayList
             sentencia.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = "while (" +expresion.getJavaCode()+"){"
+        for (sentencia in bloqueSentencias) {
+            codigo += sentencia.getJavaCode()
+        }
+        codigo += "}"
+        return codigo
+    }
 }

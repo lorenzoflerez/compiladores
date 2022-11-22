@@ -48,4 +48,20 @@ class UnidadDeCompilacion( var identificador: Token, var listaImports: ArrayList
             f.analizarSemantica(tablaSimbolos, erroresSemanticos)
         }
     }
+
+    fun getJavaCode(): String {
+        var codigo = "import javax.swing.JOptionPane;"
+        if(!listaImports.isNullOrEmpty()){
+            for (import in listaImports!!){
+                codigo += import.getJavaCode()
+            }
+        }
+        codigo += "public class Principal{"
+        for (funcion in bloqueFunciones) {
+            codigo += funcion.getJavaCode()
+        }
+        codigo += "}"
+        return codigo
+    }
+
 }

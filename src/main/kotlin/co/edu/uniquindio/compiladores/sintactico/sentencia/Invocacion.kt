@@ -40,4 +40,15 @@ class Invocacion(var identificadorFuncion: Token, var argumentos: ArrayList<Argu
             erroresSemanticos.add(Error("La función ${identificadorFuncion.lexema} $tipoArgs no existe",identificadorFuncion.fila,identificadorFuncion.columna))
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = ""
+        codigo += identificadorFuncion.getJavaCode() + "("
+        for(arg in argumentos){
+            codigo += arg.getJavaCode() + ","
+        }
+        codigo = codigo.substring(0, codigo.length - 1)
+        codigo += ")"
+        return codigo
+    }
 }

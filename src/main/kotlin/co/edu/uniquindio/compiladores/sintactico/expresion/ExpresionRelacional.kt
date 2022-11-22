@@ -26,4 +26,8 @@ class ExpresionRelacional(var expresionIzquierda: Expresion, var operador: Token
         expresionIzquierda.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
         expresionDerecha.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
     }
+
+    override fun getJavaCode(): String {
+        return expresionIzquierda.getJavaCode() + operador.getJavaCode() + expresionDerecha.getJavaCode()
+    }
 }

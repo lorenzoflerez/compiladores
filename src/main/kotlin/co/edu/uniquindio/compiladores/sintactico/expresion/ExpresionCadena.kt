@@ -49,4 +49,13 @@ class ExpresionCadena( var cadenas: ArrayList<ValorTexto>): Expresion() {
             }
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = ""
+        for (valor in cadenas){
+            codigo += valor.getJavaCode() + "+"
+        }
+        codigo = codigo.substring(0, codigo.length - 1)
+        return codigo
+    }
 }

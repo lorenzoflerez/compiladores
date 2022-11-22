@@ -14,4 +14,9 @@ class Import ( var identificador: Token ){
         raiz.children.add( TreeItem("libreria : ${identificador.lexema}") )
         return raiz
     }
+
+    fun getJavaCode(): String {
+        return "import "+identificador.lexema + ";"
+    }
+
 }

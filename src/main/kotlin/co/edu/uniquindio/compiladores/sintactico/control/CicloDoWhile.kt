@@ -35,4 +35,13 @@ class CicloDoWhile ( var bloqueSentencias: ArrayList<Sentencia>, var expresion: 
             sentencia.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, ambito)
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = "do {"
+        for (sentencia in bloqueSentencias) {
+            codigo += sentencia.getJavaCode()
+        }
+        codigo += "} while (" +expresion.getJavaCode()+"){"
+        return codigo
+    }
 }

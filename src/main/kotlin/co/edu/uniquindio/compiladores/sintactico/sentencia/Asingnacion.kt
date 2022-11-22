@@ -78,4 +78,13 @@ class Asingnacion(var identificadorAsingnacion: Token, var operador:Token) : Sen
             }
         }
     }
+
+    override fun getJavaCode(): String {
+        if(expresion!=null){
+            return identificadorAsingnacion.getJavaCode() + operador.getJavaCode() + expresion!!.getJavaCode()
+        }
+        else {
+            return identificadorAsingnacion.getJavaCode() + operador.getJavaCode() +invocacion!!.getJavaCode()
+        }
+    }
 }

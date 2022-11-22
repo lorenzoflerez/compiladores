@@ -7,4 +7,8 @@ class ValorTexto(var valor: Token): Valor() {
     override fun toString(): String {
         return "ValorTexto(valor=$valor)"
     }
+
+    override fun getJavaCode(): String {
+        return valor.getJavaCode()
+    }
 }

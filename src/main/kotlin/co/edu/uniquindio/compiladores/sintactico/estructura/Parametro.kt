@@ -12,4 +12,8 @@ class Parametro( var tipoDato: Token, var parametro: Token ) {
     fun getArbolVisual(): TreeItem<String> {
         return TreeItem("${parametro.lexema} : ${tipoDato.lexema}")
     }
+
+    fun getJavaCode(): String {
+        return tipoDato.lexema+" "+parametro.lexema
+    }
 }

@@ -3,10 +3,11 @@ package co.edu.uniquindio.compiladores.lexico
 /**
  *
  */
-class AnalizadorLexico(private var codigoFuente:String) {
+class AnalizadorLexico() {
 
     var listaTokens = ArrayList<Token>()
     var listaErrores = ArrayList<Error>()
+    private var codigoFuente = ""
     private var keys = KeyWords()
     private var lexema = ""
     private var posicionActual = 0
@@ -17,6 +18,10 @@ class AnalizadorLexico(private var codigoFuente:String) {
     private var posicionInicial = 0
     private var filaInicial = 0
     private var columnaInicial = 0
+
+    fun inicializar(codigo:String){
+        codigoFuente = codigo
+    }
 
     fun analizar(){
         while ( caracterActual != finCodigo ){

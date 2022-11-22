@@ -24,9 +24,11 @@ class Constante(var tipoDato: Token, var identificador: Token, var expresion: Ex
     }
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
-        if(expresion!=null){
-            expresion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
-        }
+        expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+    }
+
+    override fun getJavaCode(): String {
+        return "final" + tipoDato.getJavaCode() + identificador.getJavaCode() + "=" +expresion.getJavaCode()
     }
 
 }

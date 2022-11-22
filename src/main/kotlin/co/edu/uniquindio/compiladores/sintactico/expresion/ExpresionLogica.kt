@@ -1,76 +1,76 @@
 package co.edu.uniquindio.compiladores.sintactico.expresion
 
+import co.edu.uniquindio.compiladores.lexico.Error
 import co.edu.uniquindio.compiladores.lexico.Token
 import co.edu.uniquindio.compiladores.semantico.TablaSimbolos
 import co.edu.uniquindio.compiladores.sintactico.datos.ValorLogico
 import javafx.scene.control.TreeItem
 
-class ExpresionLogica(
-    var expresionIzquierda: ExpresionLogica? ,
-    var expresionDerecha: ExpresionLogica?,
-    var operador: Token? ,
-    var valorLogico: ValorLogico?) :Expresion(){
+class ExpresionLogica() :Expresion(){
 
-    constructor( expresionIzquierda:ExpresionLogica?, operador:Token?, expresionDerecha: ExpresionLogica? ): this(expresionIzquierda,expresionDerecha,operador,null){
-        this.expresionIzquierda = expresionIzquierda
+    var valorIzquierda: ValorLogico? = null
+    var valorDerecha: ValorLogico? = null
+    var operador: Token? = null
+    constructor( valorIzquierda:ValorLogico?, operador:Token?, valorDerecha: ValorLogico? ): this(){
+        this.valorIzquierda = valorIzquierda
         this.operador = operador
-        this.expresionDerecha = expresionDerecha
+        this.valorDerecha = valorDerecha
     }
 
-    constructor( expresionIzquierda:ExpresionLogica?): this(expresionIzquierda,null,null,null){
-        this.expresionIzquierda = expresionIzquierda
+    constructor( valorIzquierda:ValorLogico? ): this(){
+        this.valorIzquierda = valorIzquierda
     }
 
-    constructor(valorLogico: ValorLogico?, operador:Token?, expresionDerecha: ExpresionLogica? ): this(null, expresionDerecha, operador, valorLogico){
-        this.valorLogico = valorLogico
+    constructor( operador:Token?, valorDerecha: ValorLogico? ): this(){
         this.operador = operador
-        this.expresionDerecha = expresionDerecha
-    }
-
-    constructor( valorLogico: ValorLogico? ): this(null,null,null,valorLogico){
-        this.valorLogico = valorLogico
+        this.valorDerecha = valorDerecha
     }
 
     override fun getArbolVisual(): TreeItem<String> {
-        val raiz =  TreeItem("Expresión Logica")
-        if (valorLogico != null) {
-            if (expresionDerecha != null) {
-                val texto = getTexto()
-                raiz.children.add(TreeItem(texto))
-            }
-            else{
-                val texto = getTexto()
-                raiz.children.add(TreeItem(texto))
+        val raiz = TreeItem("Expresión Logica")
+        if (valorIzquierda != null) {
+            if (valorIzquierda!!.expresion!=null){
+                raiz.children.add(valorIzquierda!!.expresion!!.getArbolVisual())
             }
         }
-        else{
-            if (expresionIzquierda != null) {
-                raiz.children.add(expresionIzquierda!!.getArbolVisual())
-            }
-            if (expresionDerecha != null) {
-                raiz.children.add(expresionDerecha!!.getArbolVisual())
+        if (operador != null) {
+            raiz.children.add(TreeItem(operador!!.lexema))
+        }
+        if (valorDerecha != null) {
+            if (valorDerecha!!.expresion!=null){
+                raiz.children.add(valorDerecha!!.expresion!!.getArbolVisual())
             }
         }
         return raiz
     }
 
-    override fun getTexto(): String {
-        if (valorLogico != null) {
-            if (expresionDerecha != null) {
-                return "${valorLogico!!.valorLogico!!.lexema} ${operador!!.lexema} ${expresionDerecha!!.valorLogico!!.valorLogico!!.lexema}"
-            }
-            return valorLogico!!.valorLogico!!.lexema
-        }
-        else{
-            return ""
-        }
-    }
-
     override fun toString(): String {
-        return "ExpresionLogica(expresionIzquierda=$expresionIzquierda, expresionDerecha=$expresionDerecha, operador=$operador, valorLogico=$valorLogico)"
+        return "ExpresionLogica(valorIzquierda=$valorIzquierda, operador=$operador, valorDerecha=$valorDerecha)"
     }
 
     override fun obtenerTipo(tablaSimbolos: TablaSimbolos, ambito: String): String {
         return "boolean"
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
+        if(valorIzquierda!=null && valorDerecha!=null){
+            valorIzquierda!!.expresion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+            valorDerecha!!.expresion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+        }
+        else{
+            valorIzquierda!!.expresion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
+        }
+    }
+
+    override fun getJavaCode(): String {
+        if(valorIzquierda!=null && valorDerecha!=null){
+            return valorIzquierda!!.expresion!!.getJavaCode() + operador!!.getJavaCode() + valorDerecha!!.expresion!!.getJavaCode()
+        }
+        else if(operador != null && valorIzquierda!=null){
+            return operador!!.getJavaCode() + valorIzquierda!!.expresion!!.getJavaCode()
+        }
+        else{
+            return valorIzquierda!!.expresion!!.getJavaCode()
+        }
     }
 }

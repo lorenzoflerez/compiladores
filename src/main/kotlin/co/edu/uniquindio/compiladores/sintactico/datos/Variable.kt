@@ -30,4 +30,12 @@ class Variable( var tipoDato: Token, var identificador: Token, var expresion: Ex
             expresion!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
         }
     }
+
+    override fun getJavaCode(): String {
+        val codigo = tipoDato.getJavaCode() + identificador.getJavaCode()
+        if (expresion!=null){
+           codigo + "=" +expresion!!.getJavaCode()
+        }
+        return "$codigo;"
+    }
 }

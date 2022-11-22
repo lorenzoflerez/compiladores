@@ -10,14 +10,19 @@ import co.edu.uniquindio.compiladores.sintactico.estructura.*
 import co.edu.uniquindio.compiladores.sintactico.expresion.*
 import co.edu.uniquindio.compiladores.sintactico.sentencia.*
 
-class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
+class AnalizadorSintactico (){
+
     private var keys = KeyWords()
+    lateinit var listaTokens:ArrayList<Token>
     var posicionActual = 0
     var posicionCheck = posicionActual
     var tokenActual = listaTokens[posicionActual]
     var tokenCheck = tokenActual
     var listaErrores = ArrayList<Error>()
 
+    fun inicializar(listaTokensLexicos:ArrayList<Token>) {
+        listaTokens = listaTokensLexicos
+    }
 
     fun obtenerSiguienteToken(){
         posicionActual++
@@ -1049,11 +1054,6 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
      * <Expresion> ::= <ExpresionCadena> | <ExpresionLogica> | <ExpresionRelacional> | <ExpresionAritmetica> | <InvocacionFuncion>
      */
     fun esExpresion(): Expresion?{
-        if(tokenActual.categoria == Categoria.IDENTIFICADOR) {
-            val valor = ValorNumerico(null, tokenActual)
-            obtenerSiguienteToken()
-            return ExpresionAritmetica(valor)
-        }
         var expresion: Expresion? = esExpresionLogica()
         if(expresion!=null)
             return expresion
@@ -1099,43 +1099,36 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
     }
 
     /**
-     * <ExpresionLogica> ::= [ operadorNegacion ] [(] <ExpresionLogica> [)] | <ExpresionLogica> operadorAND <ExpresionLogica> | <ExpresionLogica> operadorOR <ExpresionLogica> | <ValorLogico>
+     * <ExpresionLogica> ::= operadorNegacion <ValorLogico>  | <ValorLogico> operadorAND <ValorLogico> | <ValorLogico> operadorOR <ValorLogico> | <ValorLogico>
      */
     fun esExpresionLogica(): ExpresionLogica? {
-        if( tokenActual.categoria == Categoria.PARENTESIS_IZQUIERDO ){
+        checkpoint()
+        if( tokenActual.categoria == Categoria.OPERADOR_LOGICO && tokenActual.lexema == "¬" ){
+            val operador = tokenActual
             obtenerSiguienteToken()
-            val expresionIzquierda = esExpresionLogica()
-            if( expresionIzquierda != null){
-                if (tokenActual.categoria == Categoria.PARENTESIS_DERECHO ){
-                    obtenerSiguienteToken()
-                    if( tokenActual.categoria == Categoria.OPERADOR_RELACIONAL){
-                        val operador = tokenActual
-                        obtenerSiguienteToken()
-                        val expresionDerecha = esExpresionLogica()
-                        if( expresionDerecha != null){
-                            return ExpresionLogica(expresionIzquierda, operador, expresionDerecha)
-                        }
-                    }
-                    else{
-                        return ExpresionLogica(expresionIzquierda)
-                    }
-                }
+            val valorDerecha = esValorLogico()
+            if(valorDerecha != null){
+                return ExpresionLogica(operador , valorDerecha)
+            }else{
+                reportarError("La expresión esta mal escrita")
             }
         }
         else{
-            val valorLogico = esValorLogico()
-            if( valorLogico != null){
-                obtenerSiguienteToken()
-                if( tokenActual.categoria == Categoria.OPERADOR_LOGICO ){
+            val valorIzquierda = esValorLogico()
+            if(valorIzquierda!=null){
+                if( tokenActual.categoria == Categoria.OPERADOR_LOGICO && (tokenActual.lexema == "|" || tokenActual.lexema == "&") ){
                     val operador = tokenActual
                     obtenerSiguienteToken()
-                    val expresion = esExpresionLogica()
-                    if( expresion != null){
-                        return ExpresionLogica(valorLogico, operador, expresion)
+                    val valorDerecha = esValorLogico()
+                    if(valorDerecha != null){
+                        return ExpresionLogica(valorIzquierda, operador, valorDerecha)
+                    }
+                    else{
+                        reportarError("La expresión esta mal escrita")
                     }
                 }
                 else{
-                    return ExpresionLogica(valorLogico)
+                    return ExpresionLogica(valorIzquierda)
                 }
             }
         }
@@ -1233,7 +1226,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
     }
 
     /**
-     * <Valor> ::= <ValorNumerico> | caracter | cadenaCaracteres | identificador
+     * <Valor> ::= <ValorNumerico> | <ValorTexto> | <ValorLogico>
      */
     fun esValor(): Valor? {
         var valor: Valor? = esValorNumerico()
@@ -1279,7 +1272,7 @@ class AnalizadorSintactico (var listaTokens:ArrayList<Token>){
     }
 
     /**
-     * <ValorTexto> ::= caracter | cadenaCaracteres
+     * <ValorTexto> ::= caracter | cadenaCaracteres | identificador
      */
     fun esValorTexto(): ValorTexto? {
         if(tokenActual.categoria == Categoria.CARACTER || tokenActual.categoria == Categoria.CADENA_CARACTERES || tokenActual.categoria == Categoria.IDENTIFICADOR){

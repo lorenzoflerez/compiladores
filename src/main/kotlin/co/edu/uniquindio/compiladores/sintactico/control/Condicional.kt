@@ -59,4 +59,20 @@ class Condicional( var expresion: ExpresionLogica, var bloqueSentenciasSi: Array
             }
         }
     }
+
+    override fun getJavaCode(): String {
+        var codigo = "if(" + expresion.getJavaCode() + "){"
+        for (sentencia in bloqueSentenciasSi) {
+            codigo += sentencia.getJavaCode()
+        }
+        codigo += "}"
+        if( bloqueSentenciasNo != null ){
+            codigo += "else{"
+            for (sentencia in bloqueSentenciasNo!!) {
+                codigo += sentencia.getJavaCode()
+            }
+            codigo += "}"
+        }
+        return codigo
+    }
 }

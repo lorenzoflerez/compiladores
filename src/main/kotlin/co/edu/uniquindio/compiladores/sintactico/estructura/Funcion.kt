@@ -79,7 +79,28 @@ class Funcion( var identificador :Token, var parametros: ArrayList<Parametro>?, 
         }
     }
 
-
-
+    fun getJavaCode(): String {
+        var tipo = "void"
+        if (tipoRetorno != null) {
+            tipo = tipoRetorno!!.getJavaCode()
+        }
+        var codigo = "public static $tipo ${identificador.getJavaCode()} ("
+        if (identificador.lexema.equals("main")) {
+            codigo += "String[] args"
+        } else {
+            if (!parametros.isNullOrEmpty()) {
+                for (p in parametros!!) {
+                    codigo += p.getJavaCode() + ","
+                }
+                codigo = codigo.substring(0, codigo.length - 1)
+            }
+        }
+        codigo += "){"
+        for (sentencia in bloqueSentencias) {
+            codigo += sentencia.getJavaCode()
+        }
+        codigo += "}"
+        return codigo
+    }
 
 }

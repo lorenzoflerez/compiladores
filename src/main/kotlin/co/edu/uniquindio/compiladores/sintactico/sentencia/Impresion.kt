@@ -20,4 +20,8 @@ class Impresion(var expresion: Expresion) :Sentencia() {
     override fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<Error>, ambito: String) {
         expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
     }
+
+    override fun getJavaCode(): String {
+        return "JOptionPane.showMessageDialog(null, " + expresion.getJavaCode() +");"
+    }
 }

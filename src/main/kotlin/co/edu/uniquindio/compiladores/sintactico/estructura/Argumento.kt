@@ -25,5 +25,9 @@ class Argumento(var expresion: Expresion){
         expresion.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
     }
 
+    fun getJavaCode(): String {
+        return expresion.getJavaCode()
+    }
+
 
 }

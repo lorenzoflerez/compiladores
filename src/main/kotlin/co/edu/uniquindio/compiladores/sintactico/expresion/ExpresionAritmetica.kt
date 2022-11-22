@@ -136,4 +136,19 @@ class ExpresionAritmetica(
             expresionDerecha!!.analizarSemantica(tablaSimbolos, erroresSemanticos, ambito)
         }
     }
+
+    override fun getJavaCode(): String {
+        if(expresionIzquierda!=null && expresionDerecha!=null){
+            return "("+expresionIzquierda!!.getJavaCode() +")"+ operador!!.getJavaCode() + expresionDerecha!!.getJavaCode()
+        }
+        else if(expresionIzquierda != null){
+            return "(" + expresionIzquierda!!.getJavaCode() + ")"
+        }
+        else if(valorNumerico != null && expresionDerecha != null){
+            return valorNumerico!!.getJavaCode() + operador!!.getJavaCode() + expresionDerecha!!.getJavaCode()
+        }
+        else {
+            return valorNumerico!!.getJavaCode()
+        }
+    }
 }
